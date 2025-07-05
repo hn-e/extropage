@@ -1,15 +1,15 @@
 import { Logo } from "@/once-ui/components";
 
 const person = {
-  firstName: "Selene",
-  lastName: "Yu",
+  firstName: "Himanshu",
+  lastName: "Soni",
   get name() {
     return `${this.firstName} ${this.lastName}`;
   },
-  role: "Design Engineer",
-  avatar: "/images/avatar.jpg",
-  email: "example@gmail.com",
-  location: "Asia/Jakarta", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
+  role: "Founder @ Extrowurts",
+  avatar: "/images/honey.jpeg",
+  email: "hminahsu@gmail.com",
+  location: "Asia/Kolkata", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
   languages: ["English", "Bahasa"], // optional: Leave the array empty if you don't want to display languages
 };
 
@@ -30,12 +30,12 @@ const social = [
   {
     name: "GitHub",
     icon: "github",
-    link: "https://github.com/once-ui-system/nextjs-starter",
+    link: "/",
   },
   {
     name: "LinkedIn",
     icon: "linkedin",
-    link: "https://www.linkedin.com/company/once-ui/",
+    link: "https://www.linkedin.com/company/extrowurts/",
   },
   {
     name: "X",
@@ -90,7 +90,7 @@ const about = {
     title: "Introduction",
     description: (
       <>
-        Selene is a Jakarta-based design engineer with a passion for transforming complex challenges
+        Hi, I am a Software Developer with passion for transforming complex challenges
         into simple, elegant design solutions. Her work spans digital interfaces, interactive
         experiences, and the convergence of design and technology.
       </>
