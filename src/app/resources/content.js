@@ -10,7 +10,7 @@ const person = {
   avatar: "/images/honey.jpeg",
   email: "hminahsu@gmail.com",
   location: "Asia/Kolkata", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
-  languages: ["English", "Bahasa"], // optional: Leave the array empty if you don't want to display languages
+  languages: ["English", "Hindi"], // optional: Leave the array empty if you don't want to display languages
 };
 
 const newsletter = {
@@ -30,7 +30,7 @@ const social = [
   {
     name: "GitHub",
     icon: "github",
-    link: "/",
+    link: "https://github.com/hn-e/",
   },
   {
     name: "LinkedIn",
@@ -55,16 +55,15 @@ const home = {
   label: "Home",
   title: `${person.name}'s Portfolio`,
   description: `Portfolio website showcasing my work as a ${person.role}`,
-  headline: <>Building bridges between design and code</>,
+  headline: <>Stop scrolling, start partying.</>,
   featured: {
     display: true,
-    title: <>Recent project: <strong className="ml-4">Once UI</strong></>,
+    title: <>Recent project: <strong className="ml-4">Extrowurts</strong></>,
     href: "/work/building-once-ui-a-customizable-design-system",
   },
   subline: (
     <>
-      I'm Selene, a design engineer at <Logo icon={false} style={{ display: "inline-flex", top: "0.25em", marginLeft: "-0.25em" }}/>, where I craft intuitive
-      <br /> user experiences. After hours, I build my own projects.
+     I'm Himanshu Soni — built Extrowurts to make user experience so natural, even your thumb feels at home.
     </>
   ),
 };
@@ -91,7 +90,7 @@ const about = {
     description: (
       <>
         Hi, I am a Software Developer with passion for transforming complex challenges
-        into simple, elegant design solutions. Her work spans digital interfaces, interactive
+        into simple, elegant design solutions. My work spans digital interfaces, interactive
         experiences, and the convergence of design and technology.
       </>
     ),
@@ -101,45 +100,27 @@ const about = {
     title: "Work Experience",
     experiences: [
       {
-        company: "FLY",
-        timeframe: "2022 - Present",
-        role: "Senior Design Engineer",
+        company: "Extrowurts",
+        timeframe: "2025 - Present",
+        role: "Founder & Tech Lead",
         achievements: [
           <>
-            Redesigned the UI/UX for the FLY platform, resulting in a 20% increase in user
-            engagement and 30% faster load times.
+            Developed mobile apps for android and ios for users to create parties , 
+            and meet real world people
           </>,
-          <>
-            Spearheaded the integration of AI tools into design workflows, enabling designers to
-            iterate 50% faster.
-          </>,
+          
         ],
         images: [
           // optional: leave the array empty if you don't want to display images
           {
-            src: "/images/projects/project-01/cover-01.jpg",
-            alt: "Once UI Project",
-            width: 16,
-            height: 9,
+            src: "/images/projects/project-01/extrowurts.jpeg",
+            alt: "Extrowurts",
+            width: 40,
+            height: 10,
           },
         ],
       },
-      {
-        company: "Creativ3",
-        timeframe: "2018 - 2022",
-        role: "Lead Designer",
-        achievements: [
-          <>
-            Developed a design system that unified the brand across multiple platforms, improving
-            design consistency by 40%.
-          </>,
-          <>
-            Led a cross-functional team to launch a new product line, contributing to a 15% increase
-            in overall company revenue.
-          </>,
-        ],
-        images: [],
-      },
+      
     ],
   },
   studies: {
@@ -147,22 +128,18 @@ const about = {
     title: "Studies",
     institutions: [
       {
-        name: "University of Jakarta",
+        name: "IIT Madras",
         description: <>Studied software engineering.</>,
-      },
-      {
-        name: "Build the Future",
-        description: <>Studied online marketing and personal branding.</>,
-      },
+      }
     ],
   },
   technical: {
-    display: true, // set to false to hide this section
+    display: false, // set to false to hide this section
     title: "Technical skills",
     skills: [
       {
-        title: "Figma",
-        description: <>Able to prototype in Figma with Once UI with unnatural speed.</>,
+        title: "Laravel",
+        description: <>Able to create intuitive designs and fully functional webapps in laravel</>,
         // optional: leave the array empty if you don't want to display images
         images: [
           {
@@ -180,8 +157,8 @@ const about = {
         ],
       },
       {
-        title: "Next.js",
-        description: <>Building next gen apps with Next.js + Once UI + Supabase.</>,
+        title: "React Native",
+        description: <>Building next gen mobile apps for android and ios with React native +Appwrite </>,
         // optional: leave the array empty if you don't want to display images
         images: [
           {
@@ -194,6 +171,23 @@ const about = {
       },
     ],
   },
+  team:{
+    display : true,
+    title : 'Extrowurts Team Members',
+    names:[
+      {
+        title:"Harsh Valecha",
+        designation: "QA Lead",
+        profile:'/images/projects/project-01/harsh.jpg',
+        description:`Tested Extrowurts mobile apps on different devices , including android and ios
+        Automated manual process and also performed regression testing on extropage website and 
+        created test suite using playwright 
+        `,
+        Linkedin:"https://www.linkedin.com/in/harsh-valecha/",
+        Portfolio:"https://harshvalecha.pythonanywhere.com/"
+      }
+    ]
+  }
 };
 
 const blog = {
