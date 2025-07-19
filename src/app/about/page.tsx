@@ -320,22 +320,55 @@ export default function About() {
             </>
           )}
 
-          {about.team.display && (
-            <>
-            <Heading
-             as="h3"
-             id={about.team.title}
-             variant="display-strong-s"
-             marginBottom="40"
-             >{about.team.title}</Heading>
-            
-            <Column fillWidth gap="l">
-            </Column>
-              {about.team.names.map((name,index)=>{
-                
-              })}
-            </>
-          )}
+      {about.team.display && (
+        <>
+          <Heading
+            as="h3"
+            id={about.team.title}
+            variant="display-strong-s"
+            marginBottom="40"
+          >
+            {about.team.title}
+          </Heading>
+          <Column fillWidth gap="l">
+            {about.team.names.map((member, index) => (
+              <Flex key={member.title} gap="24" vertical="center" padding="16" border="neutral-medium" radius="l">
+                <Avatar src={member.profile} size="l" />
+                <Column gap="4">
+                  <Text variant="heading-strong-m">{member.title}</Text>
+                  <Text variant="body-default-s" onBackground="neutral-weak">
+                    {member.designation}
+                  </Text>
+                  <Text variant="body-default-xs" onBackground="neutral-weak">
+                    {member.description}
+                  </Text>
+                  <Flex gap="8" marginTop="4">
+                    {member.Linkedin && (
+                      <Button
+                        href={member.Linkedin}
+                        prefixIcon="linkedin"
+                        label="LinkedIn"
+                        size="s"
+                        variant="secondary"
+                      />
+                    )}
+                    {member.Portfolio && (
+                      <Button
+                        href={member.Portfolio}
+                        prefixIcon="link"
+                        label="Portfolio"
+                        size="s"
+                        variant="secondary"
+                      />
+                    )}
+                  </Flex>
+                </Column>
+              </Flex>
+            ))}
+          </Column>
+        </>
+      )}
+
         </Column>
       </Flex>
     </Column>
