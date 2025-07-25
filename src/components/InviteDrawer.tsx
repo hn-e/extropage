@@ -154,7 +154,7 @@ export default function InviteDrawer() {
         </Flex>
 
         <Flex direction="column" gap="24" padding="24" paddingTop="0" overflowY="auto">
-          <Text>Invite ID: {inviteId}</Text>
+          { inviteId && <Text>Invite ID: {inviteId}</Text>}
           {/* Add your content here */}
         </Flex>
       </Flex>
