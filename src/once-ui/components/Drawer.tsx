@@ -27,7 +27,7 @@ export const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, children }) => 
       left="0"
       right="0"
       bottom="0"
-      width="100%"
+      // width="100%"
       zIndex={7} // Below navbar (assuming navbar is at 8)
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -39,8 +39,8 @@ export const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, children }) => 
       <Flex
         direction="column"
         background="surface"
-        width="100%"
-        radius="xl-t"
+        // width="100%"
+        // radius="xl-t"
         border="neutral-alpha-medium"
         className={classNames(styles.drawer, {
           [styles.open]: isOpen,
