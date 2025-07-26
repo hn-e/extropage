@@ -228,9 +228,8 @@ export default function About() {
                             radius="m"
                             // //@ts-ignore
                             // minWidth={image.width}
-                            width="100%"
+                            // style={{ width: '100%' }} // Use style prop for percentage
                             maxWidth={image.width}
-                            //@ts-ignore
                             height={image.height}
                           >
                             <SmartImage
