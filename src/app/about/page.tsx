@@ -226,8 +226,10 @@ export default function About() {
                             key={index}
                             border="neutral-medium"
                             radius="m"
-                            //@ts-ignore
-                            minWidth={image.width}
+                            // //@ts-ignore
+                            // minWidth={image.width}
+                            width="100%"
+                            maxWidth={image.width}
                             //@ts-ignore
                             height={image.height}
                           >
@@ -235,7 +237,7 @@ export default function About() {
                               enlarge
                               radius="m"
                               //@ts-ignore
-                              sizes={image.width.toString()}
+                              // sizes={image.width.toString()}
                               //@ts-ignore
                               alt={image.alt}
                               //@ts-ignore
