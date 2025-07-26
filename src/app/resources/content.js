@@ -113,10 +113,10 @@ const about = {
         images: [
           // optional: leave the array empty if you don't want to display images
           {
-            src: "/images/projects/project-01/extrowurts.jpeg",
+            src: "/images/projects/project-01/party1.jpg",
             alt: "Extrowurts",
-            width: 40,
-            height: 10,
+            width: 26,
+            height: 15,
           },
         ],
       },
@@ -180,7 +180,7 @@ const about = {
         designation: "QA Lead",
         profile:'/images/projects/project-01/harsh.jpg',
         description:`Tested Extrowurts mobile apps on different devices , including android and ios
-        Automated manual process and also performed regression testing on extropage website and 
+        automated manual process and also performed regression testing on extropage website and 
         created test suite using playwright 
         `,
         Linkedin:"https://www.linkedin.com/in/harsh-valecha/",
