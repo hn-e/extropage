@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Flex, Text, IconButton } from "@/once-ui/components";
 import styles from "./InviteDrawer.module.scss";
 import classNames from "classnames";
 
-export default function InviteDrawer() {
+function InviteDrawerContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -21,7 +21,6 @@ export default function InviteDrawer() {
     if (inviteId) {
       setIsOpen(true);
       setDragOffset(0);
-      // Prevent body scroll when drawer is open
       document.body.style.overflow = "hidden";
     } else {
       setIsOpen(false);
@@ -33,28 +32,9 @@ export default function InviteDrawer() {
     };
   }, [inviteId]);
 
-  useEffect(() => {
-    // Apply blur to main content when drawer is open
-    const mainContent = document.querySelector('main');
-    if (mainContent) {
-      if (inviteId) {
-        mainContent.style.filter = 'blur(4px)';
-        mainContent.style.transition = 'filter 0.3s ease';
-        mainContent.style.pointerEvents = 'none';
-      } else {
-        mainContent.style.filter = '';
-        mainContent.style.transition = '';
-        mainContent.style.pointerEvents = '';
-      }
-    }
-  }, [inviteId]);
-
   const handleClose = () => {
     setIsOpen(false);
-    // Remove only the 'id' query parameter while keeping the current path
-    const url = new URL(window.location.href);
-    url.searchParams.delete('id');
-    router.replace(url.pathname);
+    router.replace(pathname);
   };
 
   const handleDragStart = (e: React.TouchEvent | React.MouseEvent) => {
@@ -67,14 +47,14 @@ export default function InviteDrawer() {
     if (!isDragging) return;
     const clientY = 'touches' in e ? (e as TouchEvent).touches[0].clientY : (e as MouseEvent).clientY;
     const delta = clientY - dragStart;
-    if (delta > 0) { // Only allow dragging downwards
+    if (delta > 0) {
       setDragOffset(delta);
     }
   };
 
   const handleDragEnd = () => {
     setIsDragging(false);
-    if (dragOffset > 150) { // Close if dragged down more than 150px
+    if (dragOffset > 150) {
       handleClose();
     } else {
       setDragOffset(0);
@@ -103,16 +83,14 @@ export default function InviteDrawer() {
     <>
       <Flex
         position="fixed"
+        top="0"
         left="0"
         right="0"
         bottom="0"
-        top="0"
-        zIndex={7}
         background="overlay"
+        zIndex={7}
+        className={classNames(styles.overlay, { [styles.open]: isOpen })}
         onClick={handleClose}
-        className={classNames(styles.overlay, {
-          [styles.open]: isOpen,
-        })}
       />
       <Flex
         ref={drawerRef}
@@ -133,6 +111,7 @@ export default function InviteDrawer() {
         onClick={(e) => e.stopPropagation()}
       >
         <Flex
+          fillWidth
           horizontal="center"
           padding="12"
           onMouseDown={handleDragStart}
@@ -153,11 +132,19 @@ export default function InviteDrawer() {
           />
         </Flex>
 
-        <Flex direction="column" gap="24" padding="24" paddingTop="0" overflowY="auto">
-          { inviteId && <Text>Invite ID: {inviteId}</Text>}
+        <Flex direction="column" gap="16" padding="24" paddingTop="0" overflowY="auto">
+          <Text>Invite ID: {inviteId}</Text>
           {/* Add your content here */}
         </Flex>
       </Flex>
     </>
+  );
+}
+
+export default function InviteDrawer() {
+  return (
+    <Suspense fallback={null}>
+      <InviteDrawerContent />
+    </Suspense>
   );
 }

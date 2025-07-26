@@ -15,26 +15,38 @@ const protectedRoutes = {
   "/work/automate-design-handovers-with-a-figma-to-code-pipeline": true,
 };
 
-import { Geist } from "next/font/google";
-import { Geist_Mono } from "next/font/google";
+import { Inter } from 'next/font/google'
 
-const primaryFont = Geist({
-  variable: "--font-primary",
-  subsets: ["latin"],
-  display: "swap",
-});
+// Initialize the Inter font
+const primaryFont = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-primary'
+})
 
-const monoFont = Geist_Mono({
-  variable: "--font-code",
-  subsets: ["latin"],
-  display: "swap",
-});
+const secondaryFont = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-secondary'
+})
+
+const tertiaryFont = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-tertiary'
+})
+
+const monoFont = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-code'
+})
 
 const font = {
   primary: primaryFont,
-  secondary: primaryFont,
-  tertiary: primaryFont,
-  code: monoFont,
+  secondary: secondaryFont,
+  tertiary: tertiaryFont,  
+  code: monoFont
 };
 
 const style = {
