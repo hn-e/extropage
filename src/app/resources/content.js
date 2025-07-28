@@ -53,8 +53,8 @@ const home = {
   path: "/",
   image: "/images/og/home.jpg",
   label: "Home",
-  title: `${person.name}'s Portfolio`,
-  description: `Portfolio website showcasing my work as a ${person.role}`,
+  title: `Extrowurts`,
+  description: `For you to stop reading and start partying`,
   headline: <>Stop scrolling, start partying.</>,
   featured: {
     display: true,
@@ -63,7 +63,7 @@ const home = {
   },
   subline: (
     <>
-     I'm Himanshu Soni — built Extrowurts to make user experience so natural, even your thumb feels at home.
+     I'm Himanshu Soni — created Extrowurts to make user experience so natural, even your thumb feels at home.
     </>
   ),
 };
