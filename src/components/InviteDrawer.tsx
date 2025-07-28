@@ -17,7 +17,7 @@ function InviteDrawerContent() {
   const [dragStart, setDragStart] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const [partyDetails, setPartyDetails] = useState<PartyDetails | null>(null);
-  const inviteId = searchParams.get("id");
+  const inviteId = searchParams.get("invite");
 
 type PartyDetails = {
   title: string;
@@ -174,11 +174,17 @@ type PartyDetails = {
           {partyDetails && 
           <>
           <Text color="text-subdued">
-            {partyDetails?.description}
+            {partyDetails?.description.length > 300
+            ? partyDetails.description.substring(0, 300) + '...'
+            : partyDetails.description}
           </Text>
 
           <Flex direction="column" gap="8" paddingTop="16" paddingBottom="64">
-            <Text><strong>📍 Location:</strong> {partyDetails?.location}</Text>
+            <Text><strong>📍 Location:</strong>
+              {partyDetails?.location.length > 100
+              ? partyDetails.location.substring(0, 100) + '...'
+              : partyDetails.location}
+            </Text>
             <Text><strong>📅 Date:</strong> {partyDetails?.date}</Text>
             {/* <Text><strong>⏰ Time:</strong> {new Date(partyDetails?.time).toLocaleTimeString()}</Text> */}
             <Text><strong>🍽️ Type:</strong> {partyDetails?.type}</Text>
