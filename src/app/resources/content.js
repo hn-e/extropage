@@ -55,15 +55,15 @@ const home = {
   label: "Home",
   title: `Extrowurts`,
   description: `For you to stop reading and start partying`,
-  headline: <>Stop scrolling, start partying.</>,
+  headline: <>Your best moments never started with a plan.</>,
   featured: {
     display: true,
-    title: <>Recent project: <strong className="ml-4">Extrowurts</strong></>,
+    title: <>Download App: <strong className="ml-4">Extrowurts</strong></>,
     href: "/work/building-once-ui-a-customizable-design-system",
   },
   subline: (
     <>
-     I'm Himanshu Soni — created Extrowurts to make user experience so natural, even your thumb feels at home.
+    and the wildest stories always start with ‘I didn’t know anyone there…’.
     </>
   ),
 };
