@@ -7,6 +7,7 @@ import styles from "./InviteDrawer.module.scss";
 import classNames from "classnames";
 import { getGuestData } from '../../lib/appwrite';
 import StoreBadge from "./StoreBadge";
+import Link from "next/link";
 
 function InviteDrawerContent() {
   const searchParams = useSearchParams();
@@ -226,8 +227,24 @@ type PartyDetails = {
                 <Icon name="person" size="s" color="text-subdued" />
               </Flex>
 
-            <Flex>
-              <StoreBadge title=""><Row paddingY="0"> JOIN </Row></StoreBadge>
+              <Link href="extrowurts://" passHref>
+                <Flex
+                  padding="12"
+                  background="surface"
+                  border="neutral-medium"
+                  radius="s-4"
+                  direction="row"
+                  horizontal="space-around"
+                  style={{ textDecoration: 'none', width: '100%', height: '100%' }}
+                >
+                  <Text variant="body-strong-l">JOIN</Text>
+                </Flex>
+              </Link>
+
+            <Flex vertical="center">
+              <Text variant="body-strong-l" paddingX="8">Or</Text>
+              <StoreBadge title=""> <Row paddingY="0"> Download </Row></StoreBadge>
+              <Text variant="body-strong-l" paddingX="8">app now</Text>
             </Flex>
 
 
