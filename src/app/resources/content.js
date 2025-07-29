@@ -6,7 +6,7 @@ const person = {
   get name() {
     return `${this.firstName} ${this.lastName}`;
   },
-  role: "Founder @ Extrowurts",
+  role: "Created Extrowurts",
   avatar: "/images/honey.jpeg",
   email: "hminahsu@gmail.com",
   location: "Asia/Kolkata", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
@@ -55,7 +55,7 @@ const home = {
   label: "Home",
   title: `Extrowurts`,
   description: `For you to stop reading and start partying`,
-  headline: <>Your best moments never started with a plan.</>,
+  headline: <>Your wildest stories always start with ‘I didn’t know anyone there…’.</>,
   featured: {
     display: true,
     title: <>Download App: <strong className="ml-4">Extrowurts</strong></>,
@@ -63,7 +63,7 @@ const home = {
   },
   subline: (
     <>
-    and the wildest stories always start with ‘I didn’t know anyone there…’.
+    And here we bring party animals and social butterflies together.
     </>
   ),
 };
@@ -102,7 +102,7 @@ const about = {
       {
         company: "Extrowurts",
         timeframe: "2025 - Present",
-        role: "Founder & Tech Lead",
+        role: "Creator",
         achievements: [
           <>
             Developed mobile apps for android and ios for users to create parties , 

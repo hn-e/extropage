@@ -82,7 +82,7 @@ export default function Home() {
       <RevealFx translateY="16" delay={0.6}>
         <Projects range={[1, 1]} />
       </RevealFx>
-      {/* {routes["/blog"] && (
+      {/* {routes["/blog"] && (       // here in place of blogs
         <Flex fillWidth gap="24" mobileDirection="column">
           <Flex flex={1} paddingLeft="l" paddingTop="24">
             <Heading as="h2" variant="display-strong-xs" wrap="balance">
@@ -94,6 +94,33 @@ export default function Home() {
           </Flex>
         </Flex>
       )} */}
+      <Flex fillWidth gap="24" mobileDirection="column">
+        <Flex flex={3} paddingX="20" gap="16" mobileDirection="column" center>
+          <a
+            href="https://play.google.com/store/apps/details?id=com.pro.nubpack"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/1280px-Google_Play_Store_badge_EN.svg.png"
+              alt="Get it on Google Play"
+              style={{ height: "60px", cursor: "pointer" }}
+            />
+          </a>
+
+          <a
+            href="https://apps.apple.com/us/app/extrowurts/id6746046462"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg"
+              alt="Download on the App Store"
+              style={{ height: "60px", cursor: "pointer" }}
+            />
+          </a>
+        </Flex>
+      </Flex>
       <Projects range={[2]} />
       {newsletter.display && <Mailchimp newsletter={newsletter} />}
     </Column>

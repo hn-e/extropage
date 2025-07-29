@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Flex, Text, IconButton } from "@/once-ui/components";
+import { Flex, Text, IconButton, Icon, Row } from "@/once-ui/components";
 import styles from "./InviteDrawer.module.scss";
 import classNames from "classnames";
 import { getGuestData } from '../../lib/appwrite';
+import StoreBadge from "./StoreBadge";
 
 function InviteDrawerContent() {
   const searchParams = useSearchParams();
@@ -30,6 +31,7 @@ type PartyDetails = {
   date: string;
   time: string;
   type: string;
+  creator: string;
 };
 
   useEffect(() => {
@@ -142,7 +144,7 @@ type PartyDetails = {
         </Flex>
 
         <Flex fillWidth horizontal="space-between" vertical="center" paddingX="24" paddingBottom="16">
-          <Text variant="heading-strong-l">Invite Details</Text>
+          <Text variant="heading-default-xs">{ partyDetails ? partyDetails.creator+' invites you to-' : 'Invite Details' }</Text>
           <IconButton
             icon="close"
             variant="tertiary"
@@ -151,11 +153,9 @@ type PartyDetails = {
           />
         </Flex>
 
-        <Flex direction="column" gap="16" padding="24" paddingTop="0" overflowY="auto">
-
-          <Text>{partyDetails?.title}</Text>
-
-          
+        <Text variant="heading-strong-xl"  padding="24">{partyDetails?.title}</Text>
+        
+        <Flex direction="row" gap="16" padding="24" paddingTop="0" overflowY="auto" mobileDirection="column">
 
           {partyDetails?.thumbnail && (
             <Flex direction="column" style={{ maxWidth: '400px' }}>
@@ -164,6 +164,9 @@ type PartyDetails = {
                 alt="Thumbnail"
                 style={{
                   width: '100%',
+                  height: '240px', // Fixed height — adjust as needed
+                  objectFit: 'cover', // Ensures image fills area without stretching
+                  objectPosition: 'center',
                   borderRadius: '12px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                 }}
@@ -173,32 +176,60 @@ type PartyDetails = {
 
           {partyDetails && 
           <>
-          <Text color="text-subdued">
-            {partyDetails?.description.length > 300
+          <Text color="text-subdued" paddingY="2">
+            "{partyDetails?.description.length > 300
             ? partyDetails.description.substring(0, 300) + '...'
-            : partyDetails.description}
+            : partyDetails.description}"
           </Text>
 
           <Flex direction="column" gap="8" paddingTop="16" paddingBottom="64">
-            <Text><strong>📍 Location:</strong>
-              {partyDetails?.location.length > 100
-              ? partyDetails.location.substring(0, 100) + '...'
-              : partyDetails.location}
-            </Text>
-            <Text><strong>📅 Date:</strong> {partyDetails?.date}</Text>
-            {/* <Text><strong>⏰ Time:</strong> {new Date(partyDetails?.time).toLocaleTimeString()}</Text> */}
-            <Text><strong>🍽️ Type:</strong> {partyDetails?.type}</Text>
-            <Text><strong>👥 Headcount:</strong> {partyDetails?.headcount}</Text>
 
-            {/* {partyDetails?.superLats.length > 0 && (
-              <Text>
-                <strong>✨ Highlights:</strong> {partyDetails?.superLats.join(', ')}
-              </Text>
-            )} */}
+              <Flex
+                padding="12"
+                background="surface"
+                border="neutral-medium"
+                radius="s-4"
+                direction="row"
+                align="center"
+                horizontal="space-between"
+              >
+                <Text>{partyDetails?.date}</Text>
+                <Icon name="calendar" size="s" color="text-subdued" />
+              </Flex>
 
-            {/* <Text>
-              <strong>🔧 Preferences:</strong> {partyDetails?.preferences}
-            </Text> */}
+              <Flex
+                padding="12"
+                background="surface"
+                border="neutral-medium"
+                radius="s-4"
+                direction="row"
+                align="center"
+                horizontal="space-between"
+              >
+                <Text>{partyDetails?.headcount}</Text>
+                <Icon name="person" size="s" color="text-subdued" />
+              </Flex>
+
+              <Flex
+                padding="12"
+                background="surface"
+                border="neutral-medium"
+                radius="s-4"
+                direction="row"
+                horizontal="space-between"
+              >
+                <Text>
+                  {partyDetails?.location.length > 100
+                  ? partyDetails.location.substring(0, 100) + '...'
+                  : partyDetails.location}
+                </Text>
+                <Icon name="person" size="s" color="text-subdued" />
+              </Flex>
+
+            <Flex>
+              <StoreBadge title=""><Row paddingY="0"> JOIN </Row></StoreBadge>
+            </Flex>
+
 
           </Flex>
           </>

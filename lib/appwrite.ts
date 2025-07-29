@@ -19,6 +19,7 @@ export type PartyDetails = {
   date: string;
   time: string;
   type: string;
+  creator: string;
 };
 
 export async function getGuestData(inviteId: string): Promise<PartyDetails| null> {
@@ -43,6 +44,7 @@ export async function getGuestData(inviteId: string): Promise<PartyDetails| null
       date: doc.date,
       time: doc.time,
       type: doc.type,
+      creator: doc.creator.name,
     };
   } catch (error) {
     return null;
