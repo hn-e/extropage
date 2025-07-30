@@ -227,7 +227,9 @@ type PartyDetails = {
                 <Icon name="person" size="s" color="text-subdued" />
               </Flex>
 
-              <Link href="extrowurts://" passHref>
+              <StoreBadge title=""> <Row paddingY="0"> JOIN </Row></StoreBadge>
+
+              {/* <Link href="extrowurts://" passHref>
                 <Flex
                   padding="12"
                   background="surface"
@@ -239,13 +241,13 @@ type PartyDetails = {
                 >
                   <Text variant="body-strong-l">JOIN</Text>
                 </Flex>
-              </Link>
+              </Link> */}
 
-            <Flex vertical="center">
+            {/* <Flex vertical="center">
               <Text variant="body-strong-l" paddingX="8">Or</Text>
               <StoreBadge title=""> <Row paddingY="0"> Download </Row></StoreBadge>
               <Text variant="body-strong-l" paddingX="8">app now</Text>
-            </Flex>
+            </Flex> */}
 
 
           </Flex>

@@ -1,11 +1,11 @@
 "use client";
 
 import { Badge } from "@/once-ui/components";
-import { useEffect, useState } from "react";
+import { useEffect, useCallback } from "react";
 
 interface StoreBadgeProps {
   title: string;
-  icon?: string; // optional icon name
+  icon?: string;
   children?: React.ReactNode;
   effect?: boolean;
 }
@@ -16,27 +16,31 @@ export default function StoreBadge({
   children,
   effect = true,
 }: StoreBadgeProps) {
-  const [storeLink, setStoreLink] = useState<string>("");
-
-  useEffect(() => {
-    const userAgent = navigator.userAgent;
-    const isAppleDevice = /iPhone|iPad|iPod|Macintosh/.test(userAgent);
 
     const appStoreLink = "https://apps.apple.com/us/app/extrowurts/id6746046462";
     const playStoreLink = "https://play.google.com/store/apps/details?id=com.pro.nubpack";
 
-    setStoreLink(isAppleDevice ? appStoreLink : playStoreLink);
-  }, []);
+    const deeplink = "extrowur://";
 
-  if (!storeLink) return null; // or a loading state if you want
+  const handleClick = useCallback(() => {
+    const userAgent = navigator.userAgent;
+    const isAppleDevice = /iPhone|iPad|iPod|Macintosh/.test(userAgent);
+    const storeLink = isAppleDevice ? appStoreLink : playStoreLink;
+
+    window.location.href = deeplink;
+
+    setTimeout(() => {
+      window.location.href = storeLink;
+    }, 2000);
+  }, []);
 
   return (
     <Badge
       title={title}
       icon={icon as any}
       effect={effect}
-      href={storeLink}
-      arrow={false} // optional, your call
+      arrow={false}
+      onClick={handleClick}
     >
       {children}
     </Badge>
