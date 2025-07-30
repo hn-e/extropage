@@ -21,26 +21,25 @@ function InviteDrawerContent() {
   const [partyDetails, setPartyDetails] = useState<PartyDetails | null>(null);
   const inviteId = searchParams.get("invite");
 
-type PartyDetails = {
-  title: string;
-  thumbnail: string;
-  location: string;
-  description: string;
-  headcount: number;
-  superLats: string[];
-  preferences: string; // stored as JSON string
-  date: string;
-  time: string;
-  type: string;
-  creator: string;
-};
+  type PartyDetails = {
+    title: string;
+    thumbnail: string;
+    location: string;
+    description: string;
+    headcount: number;
+    superLats: string[];
+    preferences: string;
+    date: string;
+    time: string;
+    type: string;
+    creator: string;
+  };
 
   useEffect(() => {
     if (inviteId) {
-      getGuestData(inviteId).then( (data) =>
-        // console.log(data)
+      getGuestData(inviteId).then((data) =>
         setPartyDetails(data as PartyDetails)
-      )
+      );
       setIsOpen(true);
       setDragOffset(0);
       document.body.style.overflow = "hidden";
@@ -60,14 +59,17 @@ type PartyDetails = {
   };
 
   const handleDragStart = (e: React.TouchEvent | React.MouseEvent) => {
-    setIsDragging(true);
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    setIsDragging(true);
     setDragStart(clientY);
   };
 
   const handleDrag = (e: TouchEvent | MouseEvent) => {
     if (!isDragging) return;
-    const clientY = 'touches' in e ? (e as TouchEvent).touches[0].clientY : (e as MouseEvent).clientY;
+    const clientY =
+      'touches' in e
+        ? (e as TouchEvent).touches[0].clientY
+        : (e as MouseEvent).clientY;
     const delta = clientY - dragStart;
     if (delta > 0) {
       setDragOffset(delta);
@@ -75,29 +77,34 @@ type PartyDetails = {
   };
 
   const handleDragEnd = () => {
-    setIsDragging(false);
     if (dragOffset > 150) {
       handleClose();
     } else {
       setDragOffset(0);
     }
+    setIsDragging(false);
   };
 
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleDrag);
-      window.addEventListener('mouseup', handleDragEnd);
-      window.addEventListener('touchmove', handleDrag);
-      window.addEventListener('touchend', handleDragEnd);
+      const onMouseMove = (e: MouseEvent) => handleDrag(e);
+      const onTouchMove = (e: TouchEvent) => handleDrag(e);
+      const onMouseUp = () => handleDragEnd();
+      const onTouchEnd = () => handleDragEnd();
+
+      window.addEventListener("mousemove", onMouseMove);
+      window.addEventListener("mouseup", onMouseUp);
+      window.addEventListener("touchmove", onTouchMove);
+      window.addEventListener("touchend", onTouchEnd);
 
       return () => {
-        window.removeEventListener('mousemove', handleDrag);
-        window.removeEventListener('mouseup', handleDragEnd);
-        window.removeEventListener('touchmove', handleDrag);
-        window.removeEventListener('touchend', handleDragEnd);
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+        window.removeEventListener("touchmove", onTouchMove);
+        window.removeEventListener("touchend", onTouchEnd);
       };
     }
-  }, [isDragging]);
+  }, [isDragging, dragStart]);
 
   if (!inviteId) return null;
 
@@ -129,15 +136,17 @@ type PartyDetails = {
         })}
         style={{
           transform: `translateY(${dragOffset}px)`,
+          transition: isDragging ? 'none' : 'transform 0.3s ease',
+          touchAction: 'none',
         }}
         onClick={(e) => e.stopPropagation()}
+        onMouseDown={handleDragStart}
+        onTouchStart={handleDragStart}
       >
         <Flex
           fillWidth
           horizontal="center"
           padding="12"
-          onMouseDown={handleDragStart}
-          onTouchStart={handleDragStart}
           cursor="grab"
           className={styles.dragHandle}
         >
@@ -145,7 +154,9 @@ type PartyDetails = {
         </Flex>
 
         <Flex fillWidth horizontal="space-between" vertical="center" paddingX="24" paddingBottom="16">
-          <Text variant="heading-default-xs">{ partyDetails ? partyDetails.creator+' invites you to-' : 'Invite Details' }</Text>
+          <Text variant="heading-default-xs">
+            {partyDetails ? `${partyDetails.creator} invites you to -` : 'Invite Details'}
+          </Text>
           <IconButton
             icon="close"
             variant="tertiary"
@@ -154,10 +165,9 @@ type PartyDetails = {
           />
         </Flex>
 
-        <Text variant="heading-strong-xl"  padding="24">{partyDetails?.title}</Text>
-        
-        <Flex direction="row" gap="16" padding="24" paddingTop="0" overflowY="auto" mobileDirection="column">
+        <Text variant="heading-strong-xl" padding="24">{partyDetails?.title}</Text>
 
+        <Flex direction="row" gap="16" padding="24" paddingTop="0" overflowY="auto" mobileDirection="column">
           {partyDetails?.thumbnail && (
             <Flex direction="column" style={{ maxWidth: '400px' }}>
               <img
@@ -165,8 +175,8 @@ type PartyDetails = {
                 alt="Thumbnail"
                 style={{
                   width: '100%',
-                  height: '240px', // Fixed height — adjust as needed
-                  objectFit: 'cover', // Ensures image fills area without stretching
+                  height: '240px',
+                  objectFit: 'cover',
                   objectPosition: 'center',
                   borderRadius: '12px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
@@ -175,85 +185,63 @@ type PartyDetails = {
             </Flex>
           )}
 
-          {partyDetails && 
-          <>
-          <Text color="text-subdued" paddingY="2">
-            "{partyDetails?.description.length > 300
-            ? partyDetails.description.substring(0, 300) + '...'
-            : partyDetails.description}"
-          </Text>
+          {partyDetails && (
+            <>
+              <Text color="text-subdued" paddingY="2">
+                "{partyDetails.description.length > 300
+                  ? partyDetails.description.substring(0, 300) + '...'
+                  : partyDetails.description}"
+              </Text>
 
-          <Flex direction="column" gap="8" paddingTop="16" paddingBottom="64">
-
-              <Flex
-                padding="12"
-                background="surface"
-                border="neutral-medium"
-                radius="s-4"
-                direction="row"
-                align="center"
-                horizontal="space-between"
-              >
-                <Text>{partyDetails?.date}</Text>
-                <Icon name="calendar" size="s" color="text-subdued" />
-              </Flex>
-
-              <Flex
-                padding="12"
-                background="surface"
-                border="neutral-medium"
-                radius="s-4"
-                direction="row"
-                align="center"
-                horizontal="space-between"
-              >
-                <Text>{partyDetails?.headcount}</Text>
-                <Icon name="person" size="s" color="text-subdued" />
-              </Flex>
-
-              <Flex
-                padding="12"
-                background="surface"
-                border="neutral-medium"
-                radius="s-4"
-                direction="row"
-                horizontal="space-between"
-              >
-                <Text>
-                  {partyDetails?.location.length > 100
-                  ? partyDetails.location.substring(0, 100) + '...'
-                  : partyDetails.location}
-                </Text>
-                <Icon name="person" size="s" color="text-subdued" />
-              </Flex>
-
-              <StoreBadge title=""> <Row paddingY="0"> JOIN </Row></StoreBadge>
-
-              {/* <Link href="extrowurts://" passHref>
+              <Flex direction="column" gap="8" paddingTop="16" paddingBottom="64">
                 <Flex
                   padding="12"
                   background="surface"
                   border="neutral-medium"
                   radius="s-4"
                   direction="row"
-                  horizontal="space-around"
-                  style={{ textDecoration: 'none', width: '100%', height: '100%' }}
+                  align="center"
+                  horizontal="space-between"
                 >
-                  <Text variant="body-strong-l">JOIN</Text>
+                  <Text>{partyDetails?.date}</Text>
+                  <Icon name="calendar" size="s" color="text-subdued" />
                 </Flex>
-              </Link> */}
 
-            {/* <Flex vertical="center">
-              <Text variant="body-strong-l" paddingX="8">Or</Text>
-              <StoreBadge title=""> <Row paddingY="0"> Download </Row></StoreBadge>
-              <Text variant="body-strong-l" paddingX="8">app now</Text>
-            </Flex> */}
+                <Flex
+                  padding="12"
+                  background="surface"
+                  border="neutral-medium"
+                  radius="s-4"
+                  direction="row"
+                  align="center"
+                  horizontal="space-between"
+                >
+                  <Text>{partyDetails?.headcount}</Text>
+                  <Icon name="person" size="s" color="text-subdued" />
+                </Flex>
 
+                <Flex
+                  padding="12"
+                  background="surface"
+                  border="neutral-medium"
+                  radius="s-4"
+                  direction="row"
+                  horizontal="space-between"
+                >
+                  <Text>
+                    {partyDetails?.location.length > 100
+                      ? partyDetails.location.substring(0, 100) + '...'
+                      : partyDetails.location}
+                  </Text>
+                  <Icon name="location" size="s" color="text-subdued" />
+                </Flex>
 
-          </Flex>
-          </>
-          }
-
+                <StoreBadge title="">
+                  <Row paddingY="0">JOIN</Row>
+                </StoreBadge>
+              </Flex>
+            </>
+          )}
         </Flex>
       </Flex>
     </>

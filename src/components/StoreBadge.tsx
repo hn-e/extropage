@@ -20,7 +20,7 @@ export default function StoreBadge({
     const appStoreLink = "https://apps.apple.com/us/app/extrowurts/id6746046462";
     const playStoreLink = "https://play.google.com/store/apps/details?id=com.pro.nubpack";
 
-    const deeplink = "extrowur://";
+    const deeplink = "extrowurts://";
 
   const handleClick = useCallback(() => {
     const userAgent = navigator.userAgent;
