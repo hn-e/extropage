@@ -188,8 +188,8 @@ function InviteDrawerContent() {
           {partyDetails && (
             <>
               <Text color="text-subdued" paddingY="2">
-                "{partyDetails.description.length > 300
-                  ? partyDetails.description.substring(0, 300) + '...'
+                "{partyDetails.description.length > 70
+                  ? partyDetails.description.substring(0, 70) + '...'
                   : partyDetails.description}"
               </Text>
 
