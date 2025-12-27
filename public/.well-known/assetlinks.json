@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.pro.nubpack",
+      "sha256_cert_fingerprints": [
+        "93:ED:98:8C:B0:DA:3E:6D:45:00:BF:FA:53:9D:CA:10:57:FA:46:BA:1D:19:29:D2:AD:C5:8B:D3:88:B2:65:7C"
+      ]
+    }
+  }
+]
