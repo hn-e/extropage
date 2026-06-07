@@ -274,7 +274,7 @@ export function ProjectsSection() {
         {/* Horizontal slider */}
         <div
           ref={sliderRef}
-          className="flex overflow-x-auto scrollbar-none pb-4 -mx-3 snap-x snap-mandatory"
+          className="flex overflow-x-auto scrollbar-none py-8 -mx-3 snap-x snap-mandatory"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {projects.map((project, index) => (
