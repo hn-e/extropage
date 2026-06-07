@@ -12,12 +12,13 @@ function BlobMesh() {
   const wireframeRef = useRef<THREE.Mesh>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const basePositions = useRef<Float32Array | null>(null);
 
-  const springX = useSpring(mouseX, { stiffness: 50, damping: 30 });
-  const springY = useSpring(mouseY, { stiffness: 50, damping: 30 });
+  const springX = useSpring(mouseX, { stiffness: 100, damping: 22 });
+  const springY = useSpring(mouseY, { stiffness: 100, damping: 22 });
 
   const geometry = useMemo(() => {
-    const geo = new THREE.IcosahedronGeometry(1.8, 64);
+    const geo = new THREE.IcosahedronGeometry(1.8, 32);
     const pos = geo.attributes.position;
 
     for (let i = 0; i < pos.count; i++) {
@@ -39,6 +40,7 @@ function BlobMesh() {
     }
 
     geo.computeVertexNormals();
+    basePositions.current = new Float32Array(pos.array);
     return geo;
   }, []);
 
@@ -52,23 +54,76 @@ function BlobMesh() {
       mouseY.set(-(e.clientY / window.innerHeight) * 2 + 1);
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
   useFrame(({ clock }) => {
+    const mx = springX.get();
+    const my = springY.get();
+
+    // Map cursor to a 3D point on a virtual sphere around the blob
+    const theta = mx * Math.PI;
+    const phi = my * Math.PI * 0.45;
+    const R = 1.8;
+    const cx = R * Math.cos(phi) * Math.sin(theta);
+    const cy = R * Math.sin(phi);
+    const cz = R * Math.cos(phi) * Math.cos(theta);
+
+    // --- Vertex displacement: bulge toward cursor ---
+    if (meshRef.current && basePositions.current) {
+      const pos = meshRef.current.geometry.attributes.position;
+      const sigma = 0.65;
+      const maxDisp = 0.38;
+      const cutoffSq = 3.5;
+
+      for (let i = 0; i < pos.count; i++) {
+        const i3 = i * 3;
+        const bx = basePositions.current[i3];
+        const by = basePositions.current[i3 + 1];
+        const bz = basePositions.current[i3 + 2];
+
+        const dx = bx - cx;
+        const dy = by - cy;
+        const dz = bz - cz;
+        const dSq = dx * dx + dy * dy + dz * dz;
+
+        if (dSq < cutoffSq) {
+          const influence =
+            Math.exp(-dSq / (2 * sigma * sigma)) * maxDisp;
+          const len = Math.sqrt(bx * bx + by * by + bz * bz);
+          const nx = bx / len;
+          const ny = by / len;
+          const nz = bz / len;
+
+          pos.setXYZ(
+            i,
+            bx + nx * influence,
+            by + ny * influence,
+            bz + nz * influence,
+          );
+        } else {
+          pos.setXYZ(i, bx, by, bz);
+        }
+      }
+
+      pos.needsUpdate = true;
+      meshRef.current.geometry.computeVertexNormals();
+    }
+
+    // --- Subtle rotation (reduced — deformation is the star now) ---
     if (meshRef.current) {
       meshRef.current.rotation.x =
-        springX.get() * 0.3 + Math.sin(clock.elapsedTime * 0.15) * 0.1;
+        mx * 0.15 + Math.sin(clock.elapsedTime * 0.15) * 0.05;
       meshRef.current.rotation.y =
-        springY.get() * 0.3 + clock.elapsedTime * 0.1;
+        my * 0.15 + clock.elapsedTime * 0.06;
       meshRef.current.rotation.z =
-        Math.cos(clock.elapsedTime * 0.12) * 0.08;
+        Math.cos(clock.elapsedTime * 0.12) * 0.04;
     }
 
     if (wireframeRef.current) {
       wireframeRef.current.rotation.copy(
-        meshRef.current?.rotation ?? new THREE.Euler()
+        meshRef.current?.rotation ?? new THREE.Euler(),
       );
     }
   });
