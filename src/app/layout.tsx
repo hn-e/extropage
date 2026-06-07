@@ -25,6 +25,9 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "honey.is-a.dev — Himanshu Soni",
   description: "Full-stack developer. Mobile, web, and backend.",
+  verification: {
+    google: "ew84dA09uOb0TOrmOvKS69o3QseZeHkvb6H9djXtYoU",
+  },
   openGraph: {
     title: "honey.is-a.dev — Himanshu Soni",
     description: "Full-stack developer — mobile, web, and backend.",
