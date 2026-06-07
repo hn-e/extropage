@@ -86,7 +86,7 @@ function PhoneModel() {
 
   return (
     <group ref={phoneRef}>
-      <Float speed={1.8} rotationIntensity={0.08} floatIntensity={0.25}>
+      <Float speed={1.8} rotationIntensity={0.06} floatIntensity={0.2}>
         <group>
           {/* Phone body */}
           <RoundedBox
@@ -292,7 +292,6 @@ export function ExtrovertsSection() {
   const sectionOpacity = useTransform(scrollYProgress, [0, 0.15, 0.3], [0, 1, 1]);
   const contentX = useTransform(scrollYProgress, [0.1, 0.4], [80, 0]);
   const contentOpacity = useTransform(scrollYProgress, [0.1, 0.35], [0, 1]);
-  const phoneScale = useTransform(scrollYProgress, [0, 0.3], [0.85, 1]);
 
   const scrollGallery = (dir: "left" | "right") => {
     if (galleryRef.current) {
@@ -330,9 +329,9 @@ export function ExtrovertsSection() {
 
       {/* ── Main Two-Column Layout ── */}
       <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center min-h-[600px]">
-        {/* Left: 3D Phone */}
+        {/* Left: 3D Phone — fixed position, no scroll animation */}
         <motion.div
-          style={{ opacity: sectionOpacity, scale: phoneScale }}
+          style={{ opacity: sectionOpacity }}
           className="relative h-[550px] sm:h-[650px] lg:h-[700px] order-2 lg:order-1"
         >
           <Canvas

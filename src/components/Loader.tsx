@@ -85,6 +85,7 @@ export function Loader() {
                   fill="rgba(255,255,255,0.9)"
                   style={{
                     filter: "drop-shadow(0 0 8px rgba(255,255,255,0.5))",
+                    transformOrigin: "50% 50%",
                   }}
                   animate={{
                     rotate:
@@ -93,7 +94,6 @@ export function Loader() {
                         : 0,
                   }}
                   transition={{ duration: 0.1, ease: "linear" }}
-                  transformOrigin="50 50"
                 />
 
                 <defs>
