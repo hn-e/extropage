@@ -8,41 +8,36 @@ interface Project {
   description: string;
   tags: string[];
   link: string;
-  color: string;
 }
 
 const projects: Project[] = [
   {
     title: "Extroverts",
     description:
-      "Android & iOS app to party, meet, and hangout with like-minded people in your city. 100+ five-star ratings with 8,000+ users across India.",
-    tags: ["React Native", "iOS", "Android", "App Store"],
+      "Mobile app for meeting people in your city. Play Store & App Store.",
+    tags: ["React Native", "iOS", "Android"],
     link: "#",
-    color: "from-white/5 to-white/[0.02]",
   },
   {
     title: "Kitinit.com",
     description:
-      "Zero-config full-stack project generator creating production-ready boilerplates for multiple frameworks. Trusted by 27,000+ developers worldwide.",
-    tags: ["Next.js", "TypeScript", "TailwindCSS", "Open Source"],
+      "Project generator that creates boilerplates for popular frameworks and tools.",
+    tags: ["Next.js", "TypeScript", "TailwindCSS"],
     link: "#",
-    color: "from-white/[0.02] to-white/5",
   },
   {
     title: "Collabiora",
     description:
-      "HIPAA-compliant health research app reimagining how medical findings are communicated. Mayo Clinic backed. Available on Play Store & App Store.",
-    tags: ["React Native", "HIPAA", "Health Tech", "Mobile"],
+      "HIPAA-compliant platform connecting patients, clinicians, and researchers.",
+    tags: ["React Native", "HIPAA", "Health Tech"],
     link: "#",
-    color: "from-white/5 to-white/0",
   },
   {
     title: "Face Detection Proctoring",
     description:
-      "AI-powered face detection for remote assessment integrity. Captures multi-face scenarios to ensure testing honesty — 7,000+ assessments/month.",
-    tags: ["JavaScript", "AI", "Computer Vision", "EdTech"],
+      "Face detection for remote assessments. Detects multi-face scenarios.",
+    tags: ["JavaScript", "AI", "EdTech"],
     link: "#",
-    color: "from-white/0 to-white/5",
   },
 ];
 
@@ -68,8 +63,8 @@ function ProjectCard({
       const centerY = rect.height / 2;
 
       setTilt({
-        x: ((y - centerY) / centerY) * 8,
-        y: ((x - centerX) / centerX) * -8,
+        x: ((y - centerY) / centerY) * 10,
+        y: ((x - centerX) / centerX) * -10,
       });
       setGlow({
         x: (x / rect.width) * 100,
@@ -101,7 +96,7 @@ function ProjectCard({
         onMouseLeave={handleMouseLeave}
       >
         <motion.div
-          className="glass-border glass-panel rounded-2xl p-8 h-[340px] flex flex-col justify-between overflow-hidden"
+          className="glass-border-neon glass-panel-pro rounded-2xl p-8 h-[340px] flex flex-col justify-between overflow-hidden"
           animate={{
             rotateX: tilt.x,
             rotateY: tilt.y,
@@ -109,13 +104,17 @@ function ProjectCard({
           transition={{ type: "spring", stiffness: 200, damping: 20 }}
           style={{ transformStyle: "preserve-3d" }}
         >
-          {/* Glow effect */}
+          {/* Animated glow follow */}
           <div
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             style={{
-              background: `radial-gradient(circle at ${glow.x}% ${glow.y}%, rgba(255,255,255,0.06) 0%, transparent 60%)`,
+              background: `radial-gradient(circle at ${glow.x}% ${glow.y}%, rgba(255,255,255,0.08) 0%, transparent 55%)`,
             }}
           />
+
+          {/* Corner metallic accents */}
+          <div className="absolute top-0 left-0 w-12 h-12 border-t border-l border-white/[0.06] rounded-tl-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute bottom-0 right-0 w-12 h-12 border-b border-r border-white/[0.06] rounded-br-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
           <div className="relative z-10 space-y-4">
             <span className="font-mono text-[10px] tracking-[0.3em] text-white/20 uppercase">
@@ -134,7 +133,7 @@ function ProjectCard({
               {project.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1 text-[10px] tracking-[0.05em] text-white/30"
+                  className="inline-flex rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1 text-[10px] tracking-[0.05em] text-white/30 transition-all duration-300 group-hover:border-white/[0.1] group-hover:text-white/45"
                 >
                   {tag}
                 </span>
@@ -170,6 +169,17 @@ function ProjectCard({
                 </motion.a>
               )}
             </AnimatePresence>
+          </div>
+
+          {/* Subtle holographic shimmer on hover */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
+            <div
+              className="absolute inset-0 animate-shimmer"
+              style={{
+                background:
+                  "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 55%, transparent 60%)",
+              }}
+            />
           </div>
         </motion.div>
       </div>
@@ -214,7 +224,7 @@ export function ProjectsSection() {
         <span className="font-mono text-xs tracking-[0.3em] text-white/20 uppercase">
           03
         </span>
-        <span className="h-px w-12 bg-white/10" />
+        <span className="h-px w-12 bg-gradient-to-r from-white/15 to-transparent" />
         <span className="font-mono text-xs tracking-[0.2em] text-white/30 uppercase">
           Projects
         </span>
@@ -223,7 +233,7 @@ export function ProjectsSection() {
       <motion.div style={{ opacity }} className="mx-auto max-w-6xl">
         <div className="flex items-end justify-between mb-12">
           <h2 className="font-heading text-4xl sm:text-5xl font-bold">
-            <span className="text-gradient-silver">Selected</span>
+            <span className="text-gradient-metallic">Selected</span>
             <br />
             <span className="text-white/80">Work</span>
           </h2>
@@ -232,7 +242,7 @@ export function ProjectsSection() {
           <div className="hidden sm:flex items-center gap-3">
             <button
               onClick={scrollLeft}
-              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-white/60 hover:border-white/20 transition-all"
+              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-white/60 hover:border-white/20 transition-all hover:bg-white/[0.03]"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
                 <path
@@ -246,7 +256,7 @@ export function ProjectsSection() {
             </button>
             <button
               onClick={scrollRight}
-              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-white/60 hover:border-white/20 transition-all"
+              className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-white/30 hover:text-white/60 hover:border-white/20 transition-all hover:bg-white/[0.03]"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
                 <path

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Syne, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Loader } from "@/components/Loader";
+import { CustomCursor } from "@/components/CustomCursor";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,13 +23,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "honey.is-a.dev — Himanshu Soni | Full-Stack Developer",
-  description:
-    "Portfolio of Himanshu Soni — Software Engineer & Full-Stack Developer. Creator of Extroverts (8K+ users) and Kitinit.com (27K+ users).",
+  title: "honey.is-a.dev — Himanshu Soni",
+  description: "Full-stack developer. Mobile, web, and backend.",
   openGraph: {
     title: "honey.is-a.dev — Himanshu Soni",
-    description:
-      "Full-Stack Developer building products at scale. Creator of Extroverts & Kitinit.com.",
+    description: "Full-stack developer — mobile, web, and backend.",
     siteName: "honey.is-a.dev",
     type: "website",
   },
@@ -42,10 +41,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
+      className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased cursor-none`}
       suppressHydrationWarning
     >
-      <body className="bg-[#0a0a0a] text-[#fafafa] min-h-screen">
+      <body className="bg-[#0a0a0a] text-[#fafafa] min-h-screen bg-grid-fine bg-noise">
+        <CustomCursor />
         <Loader />
         {children}
       </body>

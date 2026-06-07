@@ -49,9 +49,9 @@ export function Navbar() {
       transition={{ delay: 1.8, duration: 0.8, ease: "easeOut" }}
     >
       <nav
-        className={`mx-auto max-w-5xl rounded-2xl transition-all duration-500 ${
+        className={`mx-auto max-w-5xl rounded-2xl transition-all duration-700 ${
           scrolled
-            ? "glass-panel px-6 py-3"
+            ? "glass-panel-pro glow-pro px-6 py-3"
             : "bg-transparent px-6 py-3"
         }`}
       >
@@ -63,9 +63,10 @@ export function Navbar() {
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className="font-heading text-sm font-bold tracking-[0.2em] text-white/80 uppercase transition-colors hover:text-white"
+            className="group relative font-heading text-sm font-bold tracking-[0.2em] text-white/80 uppercase transition-colors hover:text-white"
           >
             honey
+            <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gradient-to-r from-white/50 to-transparent group-hover:w-full transition-all duration-500" />
           </a>
 
           {/* Links */}
@@ -74,7 +75,7 @@ export function Navbar() {
               <button
                 key={link.href}
                 onClick={() => handleClick(link.href)}
-                className={`relative px-4 py-2 text-xs font-medium tracking-[0.1em] uppercase transition-colors ${
+                className={`relative px-4 py-2 text-xs font-medium tracking-[0.1em] uppercase transition-all duration-300 ${
                   activeSection === link.href.replace("#", "")
                     ? "text-white"
                     : "text-white/40 hover:text-white/70"
@@ -84,7 +85,7 @@ export function Navbar() {
                 {activeSection === link.href.replace("#", "") && (
                   <motion.div
                     layoutId="nav-underline"
-                    className="absolute bottom-0 left-4 right-4 h-[1px] bg-white/30"
+                    className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
@@ -101,8 +102,12 @@ export function Navbar() {
                 window.scrollTo({ top, behavior: "smooth" });
               }
             }}
-            className="hidden md:flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-medium tracking-[0.1em] text-white/60 uppercase transition-all hover:border-white/20 hover:text-white/90 hover:bg-white/[0.03]"
+            className="hidden md:flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-xs font-medium tracking-[0.1em] text-white/60 uppercase transition-all duration-500 hover:border-white/25 hover:text-white/90 hover:bg-white/[0.04] hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
           >
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/50 opacity-75" />
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/70" />
+            </span>
             <span>Resume</span>
             <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
               <path
@@ -121,10 +126,10 @@ export function Navbar() {
               <button
                 key={link.href}
                 onClick={() => handleClick(link.href)}
-                className={`w-1.5 h-1.5 rounded-full transition-all ${
+                className={`transition-all duration-300 rounded-full ${
                   activeSection === link.href.replace("#", "")
-                    ? "bg-white w-4"
-                    : "bg-white/20"
+                    ? "w-5 h-1.5 bg-white/60 shadow-[0_0_10px_rgba(255,255,255,0.2)]"
+                    : "w-1.5 h-1.5 bg-white/20"
                 }`}
               />
             ))}

@@ -1,45 +1,65 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Float } from "@react-three/drei";
 import * as THREE from "three";
 
 function ContactSphere() {
   const meshRef = useRef<THREE.Mesh>(null);
-  const [hovered, setHovered] = useState(false);
+  const glowRef = useRef<THREE.Mesh>(null);
 
   useFrame(({ clock }) => {
     if (meshRef.current) {
       meshRef.current.rotation.y = clock.elapsedTime * 0.3;
       meshRef.current.rotation.x = Math.sin(clock.elapsedTime * 0.2) * 0.2;
-      const s = hovered ? 1.15 : 1;
-      meshRef.current.scale.lerp(new THREE.Vector3(s, s, s), 0.08);
+    }
+    if (glowRef.current) {
+      glowRef.current.rotation.y = clock.elapsedTime * 0.2;
+      glowRef.current.rotation.x = Math.cos(clock.elapsedTime * 0.25) * 0.15;
+      const s = 1 + Math.sin(clock.elapsedTime * 1.5) * 0.04;
+      glowRef.current.scale.setScalar(s);
     }
   });
 
   return (
     <Float speed={2} rotationIntensity={0.2} floatIntensity={0.3}>
-      <mesh
-        ref={meshRef}
-        onPointerEnter={() => setHovered(true)}
-        onPointerLeave={() => setHovered(false)}
-      >
+      {/* Main sphere */}
+      <mesh ref={meshRef}>
         <icosahedronGeometry args={[0.6, 4]} />
         <meshPhysicalMaterial
-          color="#f5f5f5"
-          metalness={0.1}
-          roughness={0.2}
-          clearcoat={0.8}
-          clearcoatRoughness={0.1}
+          color="#e8e8e8"
+          metalness={0.15}
+          roughness={0.15}
+          clearcoat={0.9}
+          clearcoatRoughness={0.08}
+          iridescence={0.2}
+          iridescenceIOR={0.85}
+          sheen={1}
+          sheenRoughness={0.3}
+          sheenColor="#ffffff"
           wireframe={false}
           transparent
-          opacity={0.85}
+          opacity={0.9}
         />
       </mesh>
+
+      {/* Inner glow sphere */}
+      <mesh ref={glowRef}>
+        <icosahedronGeometry args={[0.55, 3]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.06}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* Wireframe overlay */}
       <mesh>
-        <icosahedronGeometry args={[0.64, 3]} />
+        <icosahedronGeometry args={[0.65, 3]} />
         <meshBasicMaterial
           color="#ffffff"
           wireframe
@@ -84,7 +104,13 @@ const socialLinks = [
     label: "Email",
     href: "mailto:himanshoni@gmail.com",
     icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <svg
+        className="w-5 h-5"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
         <polyline points="22,6 12,13 2,6" />
       </svg>
@@ -102,22 +128,6 @@ function MagneticLink({
   icon: React.ReactNode;
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  const springX = useSpring(position.x, { stiffness: 150, damping: 15 });
-  const springY = useSpring(position.y, { stiffness: 150, damping: 15 });
-
-  const handleMouse = (e: React.MouseEvent) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    setPosition({ x: x * 0.4, y: y * 0.4 });
-  };
-
-  const handleMouseLeave = () => {
-    setPosition({ x: 0, y: 0 });
-  };
 
   return (
     <motion.a
@@ -126,14 +136,13 @@ function MagneticLink({
       target="_blank"
       rel="noopener noreferrer"
       className="flex flex-col items-center gap-2 p-3 group"
-      onMouseMove={handleMouse}
-      onMouseLeave={handleMouseLeave}
-      style={{ x: springX, y: springY }}
+      whileHover={{ scale: 1.1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
-      <span className="text-white/20 group-hover:text-white/60 transition-colors duration-300">
+      <span className="text-white/15 group-hover:text-white/70 transition-colors duration-300">
         {icon}
       </span>
-      <span className="text-[10px] tracking-[0.15em] text-white/20 group-hover:text-white/40 uppercase transition-colors duration-300">
+      <span className="text-[10px] tracking-[0.15em] text-white/15 group-hover:text-white/40 uppercase transition-colors duration-300">
         {label}
       </span>
     </motion.a>
@@ -156,6 +165,13 @@ export function ConnectSection() {
       id="connect"
       className="relative py-32 px-6 overflow-hidden"
     >
+      {/* Background decoration */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-30">
+        <div className="absolute inset-0 rounded-full border border-white/[0.02] animate-spin-slow" />
+        <div className="absolute inset-8 rounded-full border border-white/[0.03] animate-spin-slow [animation-direction:reverse] [animation-duration:15s]" />
+        <div className="absolute inset-16 rounded-full border border-white/[0.02] animate-spin-slow [animation-duration:10s]" />
+      </div>
+
       {/* Section Label */}
       <motion.div
         style={{ opacity }}
@@ -164,48 +180,46 @@ export function ConnectSection() {
         <span className="font-mono text-xs tracking-[0.3em] text-white/20 uppercase">
           04
         </span>
-        <span className="h-px w-12 bg-white/10" />
+        <span className="h-px w-12 bg-gradient-to-r from-white/15 to-transparent" />
         <span className="font-mono text-xs tracking-[0.2em] text-white/30 uppercase">
           Connect
         </span>
       </motion.div>
 
-      <motion.div style={{ opacity }} className="mx-auto max-w-4xl text-center">
+      <motion.div style={{ opacity }} className="mx-auto max-w-4xl text-center relative z-10">
         {/* 3D Sphere */}
-        <div className="relative w-32 h-32 mx-auto mb-12 pointer-events-none">
+        <div className="relative w-32 h-32 mx-auto mb-12">
+          <div className="absolute inset-0 bg-white/[0.01] rounded-full blur-2xl" />
           <Canvas
             camera={{ position: [0, 0, 3], fov: 40 }}
             dpr={[1, 2]}
             gl={{ alpha: true, antialias: true }}
           >
-            <ambientLight intensity={0.5} />
-            <pointLight position={[3, 2, 3]} intensity={1.5} color="#ffffff" />
+            <ambientLight intensity={0.6} />
+            <pointLight position={[3, 2, 3]} intensity={2} color="#ffffff" />
+            <pointLight position={[-2, -1, -2]} intensity={0.8} color="#d4d4d8" />
             <ContactSphere />
           </Canvas>
         </div>
 
         <h2 className="font-heading text-4xl sm:text-5xl font-bold mb-6">
-          <span className="text-gradient-silver">Let&apos;s Build</span>
-          <br />
-          <span className="text-white/80">Something Great</span>
+          <span className="text-gradient-metallic">Get in Touch</span>
         </h2>
 
         <p className="text-sm sm:text-base text-white/25 max-w-md mx-auto leading-relaxed mb-12">
-          I&apos;m always open to discussing new projects, collaborations,
-          or opportunities in full-stack and mobile development. Let&apos;s build
-          something that reaches real users.
+          Open to projects and collaborations.
         </p>
 
         {/* CTA */}
         <a
           href="mailto:himanshoni@gmail.com"
-          className="inline-flex items-center gap-3 group px-8 py-3 rounded-full glass-border glass-panel hover:bg-white/[0.05] transition-all duration-500 mb-16"
+          className="inline-flex items-center gap-3 group px-8 py-3 rounded-full glass-border-neon glass-panel-pro hover:bg-white/[0.06] transition-all duration-500 mb-16 hoverable glow-neon hover:glow-neon-intense"
         >
           <span className="text-sm font-medium tracking-[0.05em] text-white/70 group-hover:text-white transition-colors">
             himanshoni@gmail.com
           </span>
           <svg
-            className="w-3 h-3 text-white/30 group-hover:text-white/70 transition-colors group-hover:translate-x-1 transition-transform"
+            className="w-3 h-3 text-white/30 group-hover:text-white/70 transition-all duration-300 group-hover:translate-x-1"
             viewBox="0 0 12 12"
             fill="none"
           >
@@ -219,26 +233,15 @@ export function ConnectSection() {
           </svg>
         </a>
 
-        {/* Achievements */}
-        <div className="mb-16">
-          <h3 className="font-mono text-xs tracking-[0.2em] text-white/20 uppercase mb-6">
-            Highlights
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg mx-auto text-left">
-            {[
-              "Featured in IITM Topper's Interaction (YouTube & LinkedIn)",
-              "Ranked Top 100 in E-Commerce Shoppers' Behaviour Understanding",
-              "Special Mention — GitHubify Portfolio Contest, IIT Madras",
-              "Leetcode Top 17% (2023)",
-            ].map((item) => (
-              <div
-                key={item}
-                className="glass-panel rounded-xl px-4 py-3 text-xs text-white/25 leading-relaxed flex gap-2"
-              >
-                <span className="text-white/10 mt-0.5 flex-shrink-0">✦</span>
-                {item}
-              </div>
-            ))}
+        {/* Decorative orbit rings */}
+        <div className="mb-16 flex justify-center">
+          <div className="relative w-20 h-20">
+            <div className="absolute inset-0 rounded-full border border-white/[0.04] animate-spin-slow" />
+            <div className="absolute inset-3 rounded-full border border-white/[0.06] animate-spin-slow [animation-direction:reverse] [animation-duration:8s]" />
+            <div className="absolute inset-6 rounded-full border border-white/[0.03] animate-spin-slow [animation-duration:6s]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-white/25 animate-pulse-glow shadow-[0_0_10px_rgba(255,255,255,0.15)]" />
+            </div>
           </div>
         </div>
 
@@ -258,19 +261,7 @@ export function ConnectSection() {
         <div className="mt-24 pt-8 border-t border-white/[0.04]">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-[10px] tracking-[0.2em] text-white/15 uppercase">
-              &copy; {new Date().getFullYear()} honey.is-a.dev
-            </p>
-
-            <div className="flex items-center gap-2">
-              <span className="w-1 h-1 rounded-full bg-white/10" />
-              <p className="text-[10px] tracking-[0.2em] text-white/15 uppercase">
-                Built with purpose
-              </p>
-              <span className="w-1 h-1 rounded-full bg-white/10" />
-            </div>
-
-            <p className="text-[10px] tracking-[0.2em] text-white/15 uppercase">
-              Himanshu Soni
+              &copy; {new Date().getFullYear()} Himanshu Soni
             </p>
           </div>
         </div>

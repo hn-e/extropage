@@ -4,6 +4,46 @@ import { useEffect, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { HeroCanvas } from "./HeroCanvas";
 
+function FloatingLabel({
+  text,
+  x,
+  y,
+  delay,
+  duration,
+}: {
+  text: string;
+  x: string;
+  y: string;
+  delay: number;
+  duration: number;
+}) {
+  return (
+    <motion.div
+      className="absolute pointer-events-none z-10"
+      style={{ left: x, top: y }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.8 }}
+    >
+      <motion.div
+        className="glass-panel-pro rounded-full px-4 py-2 flex items-center gap-2"
+        animate={{ y: [0, -6, 0] }}
+        transition={{
+          duration,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: delay + 0.5,
+        }}
+      >
+        <span className="w-1.5 h-1.5 rounded-full bg-white/40 animate-pulse-glow" />
+        <span className="text-[10px] tracking-[0.15em] text-white/40 uppercase font-mono">
+          {text}
+        </span>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -23,9 +63,61 @@ export function HeroSection() {
     >
       <HeroCanvas />
 
-      {/* Gradient overlays for depth */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/20 to-[#0a0a0a] pointer-events-none z-0" />
-      <div className="absolute inset-0 pointer-events-none z-0" style={{ background: 'radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.6) 100%)' }} />
+      {/* Floating tech labels */}
+      <FloatingLabel
+        text="React"
+        x="8%"
+        y="25%"
+        delay={3.0}
+        duration={5}
+      />
+      <FloatingLabel
+        text="Next.js"
+        x="82%"
+        y="20%"
+        delay={3.2}
+        duration={5.5}
+      />
+      <FloatingLabel
+        text="Python"
+        x="12%"
+        y="72%"
+        delay={3.4}
+        duration={6}
+      />
+      <FloatingLabel
+        text="AWS"
+        x="78%"
+        y="75%"
+        delay={3.6}
+        duration={5.8}
+      />
+      <FloatingLabel
+        text="Docker"
+        x="5%"
+        y="50%"
+        delay={3.8}
+        duration={6.2}
+      />
+      <FloatingLabel
+        text="Laravel"
+        x="88%"
+        y="48%"
+        delay={4.0}
+        duration={5.3}
+      />
+
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/15 to-[#0a0a0a] pointer-events-none z-0" />
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.7) 100%)",
+        }}
+      />
+      {/* Subtle center glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none z-0 bg-glow-radial animate-breathe" />
 
       <motion.div
         style={{ opacity, scale }}
@@ -52,9 +144,9 @@ export function HeroSection() {
           transition={{ delay: 2.4, duration: 1 }}
           className="font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tight"
         >
-          <span className="text-gradient-silver">Building Products</span>
+          <span className="text-gradient-metallic">Full-stack</span>
           <br />
-          <span className="text-gradient">That Scale</span>
+          <span className="text-gradient-silver">Developer</span>
         </motion.h1>
 
         {/* Domain Tagline */}
@@ -70,17 +162,13 @@ export function HeroSection() {
           </p>
         </motion.div>
 
-        {/* Description */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        {/* Decorative divider */}
+        <motion.div
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
           transition={{ delay: 2.8, duration: 0.8 }}
-          className="max-w-lg text-sm sm:text-base text-white/30 leading-relaxed"
-        >
-          Software Engineer & Full-Stack Developer. Creator of Extroverts
-          (8K+ users) and Kitinit.com (27K+ users) — crafting production-grade
-          web and mobile experiences that reach thousands.
-        </motion.p>
+          className="w-16 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        />
 
         {/* CTA Buttons */}
         <motion.div
@@ -93,14 +181,18 @@ export function HeroSection() {
             onClick={() => {
               const el = document.getElementById("projects");
               if (el) {
-                const top = el.getBoundingClientRect().top + window.scrollY - 80;
+                const top =
+                  el.getBoundingClientRect().top + window.scrollY - 80;
                 window.scrollTo({ top, behavior: "smooth" });
               }
             }}
-            className="group relative px-8 py-3 rounded-full overflow-hidden"
+            className="group relative px-8 py-3 rounded-full overflow-hidden hoverable"
           >
-            <span className="absolute inset-0 rounded-full border border-white/20 group-hover:border-white/40 transition-colors duration-500" />
-            <span className="absolute inset-0 rounded-full bg-white/[0.03] group-hover:bg-white/[0.06] transition-colors duration-500" />
+            <span className="absolute inset-0 rounded-full border border-white/20 group-hover:border-white/40 transition-all duration-500" />
+            <span className="absolute inset-0 rounded-full bg-white/[0.03] group-hover:bg-white/[0.08] transition-all duration-500" />
+            {/* Hover glow */}
+            <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-white/[0.02] via-white/[0.04] to-white/[0.02]" />
+            <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl bg-white/[0.03]" />
             <span className="relative text-sm font-medium tracking-[0.05em] text-white/80 group-hover:text-white transition-colors duration-500">
               Explore Work
             </span>
@@ -112,15 +204,16 @@ export function HeroSection() {
               e.preventDefault();
               const el = document.getElementById("connect");
               if (el) {
-                const top = el.getBoundingClientRect().top + window.scrollY - 80;
+                const top =
+                  el.getBoundingClientRect().top + window.scrollY - 80;
                 window.scrollTo({ top, behavior: "smooth" });
               }
             }}
-            className="group text-sm tracking-[0.05em] text-white/30 hover:text-white/60 transition-colors flex items-center gap-2"
+            className="group text-sm tracking-[0.05em] text-white/30 hover:text-white/60 transition-colors flex items-center gap-2 hoverable"
           >
             Get in Touch
             <svg
-              className="w-3 h-3 transition-transform group-hover:translate-x-1"
+              className="w-3 h-3 transition-all duration-300 group-hover:translate-x-1 group-hover:text-white/50"
               viewBox="0 0 12 12"
               fill="none"
             >
@@ -147,8 +240,11 @@ export function HeroSection() {
           Scroll
         </span>
         <motion.div
-          className="w-px h-8 bg-gradient-to-b from-white/20 to-transparent"
-          animate={{ scaleY: [1, 1.5, 1] }}
+          className="w-px h-8 bg-gradient-to-b from-white/30 to-transparent"
+          animate={{
+            scaleY: [1, 1.5, 1],
+            opacity: [0.5, 0.8, 0.5],
+          }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
       </motion.div>

@@ -16,9 +16,8 @@ const experiences: Experience[] = [
     role: "Software Engineer",
     period: "FEB 2024 — PRESENT",
     achievements: [
-      "Built fullstack software products using JavaScript, PHP (Laravel), and Python",
-      "Developed AI-powered face detection proctoring system handling 7,000+ assessments/month",
-      "Practiced AWS infrastructure and open-source software development",
+      "JavaScript, PHP (Laravel), Python",
+      "AWS infrastructure and open-source development",
     ],
   },
   {
@@ -26,9 +25,8 @@ const experiences: Experience[] = [
     role: "Mobile Engineer",
     period: "AUG 2025 — MAR 2026",
     achievements: [
-      "Built production-level cross-platform mobile apps for US-based clients",
-      "Managed Apple App Store Connect and Google Play Console for client deployments",
-      "Developed Collabiora — HIPAA-compliant health research app backed by Mayo Clinic",
+      "Cross-platform mobile apps for healthcare clients",
+      "App Store Connect and Google Play Console management",
     ],
   },
   {
@@ -36,9 +34,8 @@ const experiences: Experience[] = [
     role: "Software Developer Intern",
     period: "APR 2023 — SEP 2023",
     achievements: [
-      "Developed backend interfaces and accomplished .NET development tasks",
-      "Tested and optimized application performance for enterprise software products",
-      "Collaborated with senior engineers on production deployment pipelines",
+      "Backend interfaces and .NET services",
+      "Deployment pipelines and performance testing",
     ],
   },
   {
@@ -46,9 +43,8 @@ const experiences: Experience[] = [
     role: "B.S. Programming & Data Science",
     period: "2019 — 2023",
     achievements: [
-      "Graduated with 8.1 CGPA in Programming and Data Science",
-      "Earned diplomas in Programming (2022) and Data Science (2023)",
-      "Featured in IITM Topper's Interaction on IITM YouTube & LinkedIn (2025)",
+      "Programming and Data Science",
+      "Diplomas in Programming (2022) and Data Science (2023)",
     ],
   },
 ];
@@ -78,29 +74,25 @@ export function ExperienceSection() {
         <span className="font-mono text-xs tracking-[0.3em] text-white/20 uppercase">
           02
         </span>
-        <span className="h-px w-12 bg-white/10" />
+        <span className="h-px w-12 bg-gradient-to-r from-white/15 to-transparent" />
         <span className="font-mono text-xs tracking-[0.2em] text-white/30 uppercase">
           Experience
         </span>
       </motion.div>
 
       <motion.div style={{ opacity }} className="mx-auto max-w-4xl">
-        <h2 className="font-heading text-4xl sm:text-5xl font-bold mb-16">
-          <span className="text-gradient-silver">From Intern</span>
-          <br />
-          <span className="text-white/80">to Product Engineer</span>
-        </h2>
-
         {/* Timeline */}
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-4 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-px bg-white/[0.06]" />
+          <div className="absolute left-4 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-px bg-gradient-to-b from-white/[0.08] via-white/[0.04] to-transparent" />
 
           {experiences.map((exp, index) => (
             <div
               key={exp.company}
               className={`relative grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 pb-16 last:pb-0 ${
-                index % 2 === 0 ? "" : "md:[&>*:first-child]:order-2 md:[&>*:last-child]:order-1"
+                index % 2 === 0
+                  ? ""
+                  : "md:[&>*:first-child]:order-2 md:[&>*:last-child]:order-1"
               }`}
               onMouseEnter={() => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(null)}
@@ -108,25 +100,25 @@ export function ExperienceSection() {
               {/* Timeline Node */}
               <div className="absolute left-4 md:left-1/2 top-0 -translate-x-1/2 z-10">
                 <motion.div
-                  className="w-3 h-3 rounded-full border border-white/20 bg-[#0a0a0a]"
+                  className="w-3 h-3 rounded-full border bg-[#0a0a0a]"
                   animate={{
                     borderColor:
                       activeIndex === index
-                        ? "rgba(255,255,255,0.5)"
+                        ? "rgba(255,255,255,0.6)"
                         : "rgba(255,255,255,0.12)",
-                    scale: activeIndex === index ? 1.2 : 1,
+                    scale: activeIndex === index ? 1.3 : 1,
                     boxShadow:
                       activeIndex === index
-                        ? "0 0 16px rgba(255,255,255,0.15)"
+                        ? "0 0 20px rgba(255,255,255,0.25), 0 0 40px rgba(255,255,255,0.08)"
                         : "0 0 0px rgba(255,255,255,0)",
                   }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
                   <motion.div
-                    className="absolute inset-0 rounded-full bg-white/20"
+                    className="absolute inset-0 rounded-full bg-white/30"
                     animate={{
-                      scale: activeIndex === index ? [1, 1.6, 1] : 1,
-                      opacity: activeIndex === index ? [0.4, 0, 0.4] : 0,
+                      scale: activeIndex === index ? [1, 1.8, 1] : 1,
+                      opacity: activeIndex === index ? [0.5, 0, 0.5] : 0,
                     }}
                     transition={{
                       duration: 2,
@@ -145,15 +137,21 @@ export function ExperienceSection() {
               >
                 <motion.div
                   animate={{
-                    x: activeIndex === index ? (index % 2 === 0 ? -6 : 6) : 0,
-                    opacity: activeIndex === null || activeIndex === index ? 1 : 0.3,
+                    x:
+                      activeIndex === index
+                        ? index % 2 === 0
+                          ? -6
+                          : 6
+                        : 0,
+                    opacity:
+                      activeIndex === null || activeIndex === index ? 1 : 0.25,
                   }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
                 >
                   <span className="font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase">
                     {exp.period}
                   </span>
-                  <h3 className="font-heading text-xl font-semibold text-white/70 mt-1">
+                  <h3 className="font-heading text-xl font-semibold text-white/75 mt-1">
                     {exp.role}
                   </h3>
                   <p className="text-sm text-white/40 mt-0.5">{exp.company}</p>
@@ -169,7 +167,8 @@ export function ExperienceSection() {
                 <motion.ul
                   className="space-y-2"
                   animate={{
-                    opacity: activeIndex === null || activeIndex === index ? 1 : 0.2,
+                    opacity:
+                      activeIndex === null || activeIndex === index ? 1 : 0.2,
                   }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
                 >
@@ -178,7 +177,9 @@ export function ExperienceSection() {
                       key={i}
                       className="text-sm text-white/25 leading-relaxed flex gap-2"
                     >
-                      <span className="text-white/10 mt-1.5 flex-shrink-0">—</span>
+                      <span className="text-white/10 mt-1.5 flex-shrink-0">
+                        —
+                      </span>
                       {achievement}
                     </li>
                   ))}
