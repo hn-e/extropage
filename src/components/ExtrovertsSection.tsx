@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useEffect, Suspense, useState } from "react";
+import { useRef, useEffect, Suspense, useState } from "react";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { RoundedBox, Float, Environment } from "@react-three/drei";
@@ -95,9 +95,9 @@ function PhoneModel() {
             smoothness={4}
           >
             <meshPhysicalMaterial
-              color="#1a1a1a"
-              metalness={0.9}
-              roughness={0.15}
+              color="#262626"
+              metalness={0.85}
+              roughness={0.18}
               clearcoat={1}
               clearcoatRoughness={0.05}
               reflectivity={1}
@@ -112,7 +112,7 @@ function PhoneModel() {
             smoothness={4}
           >
             <meshPhysicalMaterial
-              color="#c0c0c0"
+              color="#c8c8c8"
               metalness={0.95}
               roughness={0.08}
               clearcoat={0.5}
@@ -145,56 +145,12 @@ function PhoneModel() {
             position={[0, 1.45, 0.07]}
           >
             <meshPhysicalMaterial
-              color="#000000"
-              metalness={0.1}
+              color="#181818"
+              metalness={0.15}
               roughness={0.3}
               envMapIntensity={0.1}
             />
           </RoundedBox>
-
-          {/* Camera lens dot */}
-          <mesh position={[0.14, 1.45, 0.075]}>
-            <circleGeometry args={[0.01, 16]} />
-            <meshBasicMaterial color="#1a1a2e" />
-          </mesh>
-
-          {/* Side buttons */}
-          <RoundedBox
-            args={[0.03, 0.18, 0.03]}
-            radius={0.01}
-            smoothness={2}
-            position={[0.84, 0.6, 0]}
-          >
-            <meshPhysicalMaterial
-              color="#333333"
-              metalness={0.8}
-              roughness={0.2}
-            />
-          </RoundedBox>
-          <RoundedBox
-            args={[0.03, 0.12, 0.03]}
-            radius={0.01}
-            smoothness={2}
-            position={[0.84, 0.3, 0]}
-          >
-            <meshPhysicalMaterial
-              color="#333333"
-              metalness={0.8}
-              roughness={0.2}
-            />
-          </RoundedBox>
-
-          {/* Subtle edge glow line */}
-          <mesh position={[0, 0, 0.07]}>
-            <ringGeometry args={[1.55, 1.6, 64]} />
-            <meshBasicMaterial
-              color="#ffffff"
-              transparent
-              opacity={0.04}
-              side={THREE.DoubleSide}
-              depthWrite={false}
-            />
-          </mesh>
         </group>
       </Float>
     </group>
@@ -413,9 +369,20 @@ export function ExtrovertsSection() {
                 </span>
               </div>
               <div>
-                <h2 className="font-heading text-4xl sm:text-5xl font-bold">
-                  <span className="text-gradient-metallic">Extroverts</span>
-                </h2>
+                <div className="flex items-center gap-3">
+                  <h2 className="font-heading text-4xl sm:text-5xl font-bold">
+                    <span className="text-gradient-metallic">Extroverts</span>
+                  </h2>
+                  <span className="flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-0.5">
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/70" />
+                    </span>
+                    <span className="text-[9px] tracking-[0.15em] text-white/40 uppercase font-mono">
+                      Live
+                    </span>
+                  </span>
+                </div>
                 <p className="text-sm text-white/30 mt-1">
                   Party · Hangout · Vibe
                 </p>

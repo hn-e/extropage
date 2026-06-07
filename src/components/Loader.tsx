@@ -93,7 +93,7 @@ export function Loader() {
                         : 0,
                   }}
                   transition={{ duration: 0.1, ease: "linear" }}
-                  transform-origin="50 50"
+                  transformOrigin="50 50"
                 />
 
                 <defs>
