@@ -1,136 +1,54 @@
-import "@/once-ui/styles/index.scss";
-import "@/once-ui/tokens/index.scss";
+import type { Metadata } from "next";
+import { Inter, Syne, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
+import { Loader } from "@/components/Loader";
 
-import classNames from "classnames";
-import { Footer, Header, RouteGuard } from "@/components";
-import { baseURL, effects, style, font, home } from "@/app/resources";
-import { Background, Column, Flex, ThemeProvider, ToastProvider } from "@/once-ui/components";
-import { opacity, SpacingToken } from "@/once-ui/types";
-import { Meta } from "@/once-ui/modules";
-import InviteDrawer from "@/components/InviteDrawer";
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
 
-export async function generateMetadata() {
-  return Meta.generate({
-    title: home.title,
-    description: home.description,
-    baseURL: baseURL,
-    path: home.path,
-    image: home.image,
-  });
-}
+const syne = Syne({
+  variable: "--font-syne",
+  subsets: ["latin"],
+  display: "swap",
+});
 
-interface RootLayoutProps {
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "honey.is-a.dev — Himanshu Soni | Full-Stack Developer",
+  description:
+    "Portfolio of Himanshu Soni — Software Engineer & Full-Stack Developer. Creator of Extroverts (8K+ users) and Kitinit.com (27K+ users).",
+  openGraph: {
+    title: "honey.is-a.dev — Himanshu Soni",
+    description:
+      "Full-Stack Developer building products at scale. Creator of Extroverts & Kitinit.com.",
+    siteName: "honey.is-a.dev",
+    type: "website",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
   children: React.ReactNode;
-}
-
-export default function RootLayout({ children }: RootLayoutProps) {
+}>) {
   return (
-    <Flex
-      suppressHydrationWarning
-      as="html"
+    <html
       lang="en"
-      background="page"
-      data-neutral={style.neutral}
-      data-brand={style.brand}
-      data-accent={style.accent}
-      data-solid={style.solid}
-      data-solid-style={style.solidStyle}
-      data-border={style.border}
-      data-surface={style.surface}
-      data-transition={style.transition}
-      className={classNames(
-        font.primary.variable,
-        font.secondary.variable,
-        font.tertiary.variable,
-        font.code.variable,
-      )}
+      className={`${inter.variable} ${syne.variable} ${jetbrainsMono.variable} antialiased`}
+      suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  const theme = localStorage.getItem('theme') || 'system';
-                  const root = document.documentElement;
-                  if (theme === 'system') {
-                    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    root.setAttribute('data-theme', isDark ? 'dark' : 'light');
-                  } else {
-                    root.setAttribute('data-theme', theme);
-                  }
-                } catch (e) {
-                  document.documentElement.setAttribute('data-theme', 'dark');
-                }
-              })();
-            `,
-          }}
-        />
-      </head>
-      <ThemeProvider>
-        <ToastProvider>
-          <Column style={{ minHeight: "100vh" }} as="body" fillWidth margin="0" padding="0">
-            <Background
-              position="fixed"
-              mask={{
-                x: effects.mask.x,
-                y: effects.mask.y,
-                radius: effects.mask.radius,
-                cursor: effects.mask.cursor
-              }}
-              gradient={{
-                display: effects.gradient.display,
-                opacity: effects.gradient.opacity as opacity,
-                x: effects.gradient.x,
-                y: effects.gradient.y,
-                width: effects.gradient.width,
-                height: effects.gradient.height,
-                tilt: effects.gradient.tilt,
-                colorStart: effects.gradient.colorStart,
-                colorEnd: effects.gradient.colorEnd,
-              }}
-              dots={{
-                display: effects.dots.display,
-                opacity: effects.dots.opacity as opacity,
-                size: effects.dots.size as SpacingToken,
-                color: effects.dots.color,
-              }}
-              grid={{
-                display: effects.grid.display,
-                opacity: effects.grid.opacity as opacity,
-                color: effects.grid.color,
-                width: effects.grid.width,
-                height: effects.grid.height,
-              }}
-              lines={{
-                display: effects.lines.display,
-                opacity: effects.lines.opacity as opacity,
-                size: effects.lines.size as SpacingToken,
-                thickness: effects.lines.thickness,
-                angle: effects.lines.angle,
-                color: effects.lines.color,
-              }}
-            />
-            <Flex fillWidth minHeight="16" hide="s"></Flex>
-            <Header />
-            <Flex
-              zIndex={0}
-              fillWidth
-              paddingY="l"
-              paddingX="l"
-              horizontal="center"
-              flex={1}
-            >
-              <Flex horizontal="center" fillWidth minHeight="0">
-                <RouteGuard>{children}</RouteGuard>
-              </Flex>
-            </Flex>
-            <Footer />
-            <InviteDrawer />
-          </Column>
-        </ToastProvider>
-      </ThemeProvider>
-    </Flex>
+      <body className="bg-[#0a0a0a] text-[#fafafa] min-h-screen">
+        <Loader />
+        {children}
+      </body>
+    </html>
   );
 }
-///

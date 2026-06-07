@@ -1,0 +1,42 @@
+Himanshu Soni
+(+91) 81206 92292
+himanshoni@gmail.com
+https://honey.is-a.dev 
+
+Software Engineer | Full-Stack Developer | Creator Extroverts (8K+ users), Kitinit.com (27K+ users)
+Experience  ______________________________________________________________________________________________________________________________
+● Geeekd, Delhi - Software Engineer   FEBRUARY 2024 - PRESENT
+Created fullstack softwares, accomplished Javascript, PHP(Laravel), Python products. Practiced AWS and FOSS.
+● Humanity Founders, Remote - Mobile Engineer   AUGUST 2025 - MARCH 2026
+Created production level cross-platform mobile apps for US based clients, managed Apple App Store Connect and Google Play Console for their apps.
+● SymphonyAI, Bengaluru - Software Developer Intern   APRIL 2023 - SEPTEMBER 2023 
+Created backend interfaces, accomplished Dotnet tasks and tested app performances as Software Developer Intern.
+Projects ___________________________________________________________________________________________________________________________________
+● Extroverts, Android and iOS - 100+ 5 star ratings   REACT NATIVE (SELF-OWNED)
+Available on Play Store and App Store, an  app to party/meet/hangout with like minded people in your city and expand your network. Spanned for 8000+ people across the nation.
+● Kitinit.com, 27000+ users   NEXTJS (SELF-OWNED)
+Zero-config full-stack project generator to create production-ready boilerplates to make project initialization easy for multiple frameworks and tools(like mailing, payments, auth, styling, etc).
+● Collabiora, Android and iOS   REACT NATIVE (HUMANITY FOUNDER- COLLABIORA HIPA COMPLIANT + MAYO CLINIC BACKED)
+Available on Play Store and App Store, an app to reimagine how health research is communicated and connected, making it more transparent, collaborative, and accessible to patients, clinicians, and researchers.
+● Face Detection Assessment Proctoring Add-On   JAVASCRIPT (GEEEKD)
+An AI face detection algorithm to detect faces for real assessments to capture zero or more than one faces to ensure remote testing integrity- ongoing with extensible robustness for more than 7000 online interview assessments/mo.
+Education  ________________________________________________________________________________________________________________________________
+● Indian Institute Of Technology Madras, Chennai(T.N.) 2019 - 2023
+Diploma in Programming (JAN 2022-AUG 2022), Diploma in Data Science, (SEP 2022-APR-2023) 
+B.S. in Programming and Data Science CGPA-8.1 
+● Red Rose School Lambakheda, Bhopal (M.P.) 2008 - 2018 
+Class XII Percentage-76.6% 
+Class X CGPA-10.0 
+Skillset  _____________________________________________________________________________________________________________________________________
+● Technologies 
+Python, JavaScript, HTML5, SQL, Bash, GIT, JSON, REST APIs
+● Frameworks/ Libraries/ Tools 
+Django, Flask, Laravel, Node, React, Native, VueJS, NextJS, Bootstrap, TailwindCSS, MySQL, PostgreSQL, SQLite, AWS, Redis, Celery, Scikit-learn, NumPy, Pandas, VSCode, XCode, WebGL, WordPress, Photoshop, Postman
+● Skills 
+Googling, Problem Solving, Creativity, Research, Strategic Management, Communication, Technical Writing, Debugging
+Achievements    ________________________________________________________________________________________________________________________
+● Featured in IITMadras Topper’s Interaction available on IITM’s Youtube/LinkedIn- IIT, Madras   2025
+● Ranked in the top 100 in E-Commerce Shoppers’ Behaviour Understanding- IIT, Madras   2022
+● Olympiad on Mathematics and Statistics- IIT, Madras   2022 
+● Special Mention in GitHubify PortFolio Contest- IIT, Madras   2021 
+● Leetcode Top 17%   2023
