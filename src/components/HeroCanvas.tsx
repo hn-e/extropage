@@ -165,57 +165,58 @@ function Particles({ morphProgress }: { morphProgress: MotionValue<number> }) {
       Math.abs(cz - lastCursor.current.z) > 0.003;
     const morphChanged = Math.abs(t - lastMorph.current) > 0.0005;
 
-    if (!cursorMoved && !morphChanged) return;
+    // Only run the expensive vertex loop when something actually changed
+    if (cursorMoved || morphChanged) {
+      lastCursor.current = { x: cx, y: cy, z: cz };
+      lastMorph.current = t;
 
-    lastCursor.current = { x: cx, y: cy, z: cz };
-    lastMorph.current = t;
+      const pos = pointsRef.current!.geometry.attributes.position;
+      const sp = sphere.positions;
+      const sr = sphere.radials;
+      const pp = phone.positions;
+      const pr = phone.radials;
 
-    const pos = pointsRef.current!.geometry.attributes.position;
-    const sp = sphere.positions;
-    const sr = sphere.radials;
-    const pp = phone.positions;
-    const pr = phone.radials;
+      const sigma = 0.65;
+      const maxDisp = 0.38;
+      const twoSigmaSq = 2 * sigma * sigma;
+      const cutoffSq = 3.5;
 
-    const sigma = 0.65;
-    const maxDisp = 0.38;
-    const twoSigmaSq = 2 * sigma * sigma;
-    const cutoffSq = 3.5;
+      for (let i = 0; i < COUNT; i++) {
+        const i3 = i * 3;
 
-    for (let i = 0; i < COUNT; i++) {
-      const i3 = i * 3;
+        // ── Staggered morph interpolation ──
+        const delay = delays[i];
+        const pt = Math.max(0, Math.min(1, (t - (1 - delay) * 0.25) / 0.75));
+        const eased = pt < 0.5 ? 2 * pt * pt : 1 - Math.pow(-2 * pt + 2, 2) / 2;
 
-      // ── Staggered morph interpolation ──
-      const delay = delays[i];
-      const pt = Math.max(0, Math.min(1, (t - (1 - delay) * 0.25) / 0.75));
-      const eased = pt < 0.5 ? 2 * pt * pt : 1 - Math.pow(-2 * pt + 2, 2) / 2;
+        const bx = sp[i3] + (pp[i3] - sp[i3]) * eased;
+        const by = sp[i3 + 1] + (pp[i3 + 1] - sp[i3 + 1]) * eased;
+        const bz = sp[i3 + 2] + (pp[i3 + 2] - sp[i3 + 2]) * eased;
 
-      const bx = sp[i3] + (pp[i3] - sp[i3]) * eased;
-      const by = sp[i3 + 1] + (pp[i3 + 1] - sp[i3 + 1]) * eased;
-      const bz = sp[i3 + 2] + (pp[i3 + 2] - sp[i3 + 2]) * eased;
+        // Interpolate radial direction
+        const rx = sr[i3] + (pr[i3] - sr[i3]) * eased;
+        const ry = sr[i3 + 1] + (pr[i3 + 1] - sr[i3 + 1]) * eased;
+        const rz = sr[i3 + 2] + (pr[i3 + 2] - sr[i3 + 2]) * eased;
+        const rlen = Math.sqrt(rx * rx + ry * ry + rz * rz) || 1;
 
-      // Interpolate radial direction
-      const rx = sr[i3] + (pr[i3] - sr[i3]) * eased;
-      const ry = sr[i3 + 1] + (pr[i3 + 1] - sr[i3 + 1]) * eased;
-      const rz = sr[i3 + 2] + (pr[i3 + 2] - sr[i3 + 2]) * eased;
-      const rlen = Math.sqrt(rx * rx + ry * ry + rz * rz) || 1;
+        // ── Liquid displacement ──
+        const dx = bx - cx;
+        const dy = by - cy;
+        const dz = bz - cz;
+        const dSq = dx * dx + dy * dy + dz * dz;
 
-      // ── Liquid displacement ──
-      const dx = bx - cx;
-      const dy = by - cy;
-      const dz = bz - cz;
-      const dSq = dx * dx + dy * dy + dz * dz;
-
-      if (dSq < cutoffSq) {
-        const influence = Math.exp(-dSq / twoSigmaSq) * maxDisp;
-        pos.setXYZ(i, bx + (rx / rlen) * influence, by + (ry / rlen) * influence, bz + (rz / rlen) * influence);
-      } else {
-        pos.setXYZ(i, bx, by, bz);
+        if (dSq < cutoffSq) {
+          const influence = Math.exp(-dSq / twoSigmaSq) * maxDisp;
+          pos.setXYZ(i, bx + (rx / rlen) * influence, by + (ry / rlen) * influence, bz + (rz / rlen) * influence);
+        } else {
+          pos.setXYZ(i, bx, by, bz);
+        }
       }
+
+      pos.needsUpdate = true;
     }
 
-    pos.needsUpdate = true;
-
-    // Auto-revolution (baseline rotation even without mouse)
+    // Auto-revolution — always runs
     if (pointsRef.current) {
       pointsRef.current.rotation.x =
         my * 0.08 + Math.sin(clock.elapsedTime * 0.18) * 0.06;

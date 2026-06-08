@@ -26,6 +26,15 @@ export function PhoneShowcase() {
         <div className="absolute inset-0 bg-glow-radial" />
       </div>
 
+      {/* Radial vignette — darkens edges so text reads above white dots */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 50% 40% at 50% 45%, rgba(10,10,10,0.8) 0%, transparent 70%)",
+        }}
+      />
+
       <motion.div
         style={{ opacity, y, scale }}
         className="relative z-10 flex flex-col items-center gap-10 text-center max-w-3xl"
