@@ -22,8 +22,8 @@ export default function Home() {
 
   // phoneProgress: 0 = sphere, 1 = phone (first 10% of scroll)
   const phoneProgress = useTransform(scrollYProgress, [0, 0.10], [0, 1]);
-  // terminalProgress: 0 = phone, 1 = terminal (when reaching Kitint section)
-  const terminalProgress = useTransform(scrollYProgress, [0.42, 0.52], [0, 1]);
+  // terminalProgress: 0 = phone, 1 = terminal (Kitint section, right after PhoneShowcase)
+  const terminalProgress = useTransform(scrollYProgress, [0.22, 0.30], [0, 1]);
 
   return (
     <>
@@ -32,10 +32,10 @@ export default function Home() {
         <Navbar />
         <HeroSection />
         <PhoneShowcase />
+        <KitintSection />
         <AboutSection />
         <ExperienceSection />
         <ExtrovertsSection />
-        <KitintSection />
         <ProjectsSection />
         <ConnectSection />
       </main>
