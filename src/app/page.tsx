@@ -10,6 +10,7 @@ import { ExtrovertsSection } from "@/components/ExtrovertsSection";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { ConnectSection } from "@/components/ConnectSection";
 import { PhoneShowcase } from "@/components/PhoneShowcase";
+import { KitintSection } from "@/components/KitintSection";
 import { BackgroundCanvas } from "@/components/HeroCanvas";
 
 export default function Home() {
@@ -19,12 +20,14 @@ export default function Home() {
     offset: ["start start", "end end"],
   });
 
-  // morphProgress: 0 = sphere, 1 = phone (starts immediately on scroll)
-  const morphProgress = useTransform(scrollYProgress, [0, 0.10], [0, 1]);
+  // phoneProgress: 0 = sphere, 1 = phone (first 10% of scroll)
+  const phoneProgress = useTransform(scrollYProgress, [0, 0.10], [0, 1]);
+  // terminalProgress: 0 = phone, 1 = terminal (when reaching Kitint section)
+  const terminalProgress = useTransform(scrollYProgress, [0.42, 0.52], [0, 1]);
 
   return (
     <>
-      <BackgroundCanvas morphProgress={morphProgress} />
+      <BackgroundCanvas phoneProgress={phoneProgress} terminalProgress={terminalProgress} />
       <main ref={containerRef} className="relative">
         <Navbar />
         <HeroSection />
@@ -32,6 +35,7 @@ export default function Home() {
         <AboutSection />
         <ExperienceSection />
         <ExtrovertsSection />
+        <KitintSection />
         <ProjectsSection />
         <ConnectSection />
       </main>

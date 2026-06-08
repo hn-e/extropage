@@ -99,20 +99,161 @@ function generatePhone() {
   return { positions, radials };
 }
 
+function generateTerminal() {
+  const positions = new Float32Array(COUNT * 3);
+  const radials = new Float32Array(COUNT * 3);
+
+  const set = (i: number, x: number, y: number, z: number) => {
+    positions[i * 3] = x;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = z;
+    const len = Math.sqrt(x * x + y * y + z * z) || 1;
+    radials[i * 3] = x / len;
+    radials[i * 3 + 1] = y / len;
+    radials[i * 3 + 2] = z / len;
+  };
+
+  const hd = 0.09; // half-depth for 3D extrusion
+  const strokeW = 0.18;
+
+  // ── > chevron ──
+  const ax = -1.0, ayT = 1.0, ayB = -1.0;
+  const px = 0.28, py = 0;
+
+  // ── _ underscore ──
+  const usX0 = 0.52, usX1 = 1.45, usY = -0.55;
+
+  // ── Corner points for rounding ──
+  const corners = [
+    { x: ax, y: ayT },        // top-left
+    { x: ax, y: ayB },        // bottom-left
+    { x: px, y: py },         // meeting point
+    { x: usX0, y: usY },      // underscore left
+    { x: usX1, y: usY },      // underscore right
+  ];
+
+  // Pick a random point inside the 2D stroke shape
+  const shapeXY = () => {
+    const r = Math.random();
+    if (r < 0.40) {
+      // > top arm
+      const t = Math.random();
+      const dx = px - ax, dy = py - ayT;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const nx = -dy / len, ny = dx / len;
+      const off = (Math.random() - 0.5) * strokeW;
+      return { x: ax + dx * t + nx * off, y: ayT + dy * t + ny * off };
+    }
+    if (r < 0.80) {
+      // > bottom arm
+      const t = Math.random();
+      const dx = px - ax, dy = py - ayB;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const nx = -dy / len, ny = dx / len;
+      const off = (Math.random() - 0.5) * strokeW;
+      return { x: ax + dx * t + nx * off, y: ayB + dy * t + ny * off };
+    }
+    // _ underscore
+    return {
+      x: usX0 + Math.random() * (usX1 - usX0),
+      y: usY + (Math.random() - 0.5) * strokeW * 1.2,
+    };
+  };
+
+  let idx = 0;
+
+  // ── Front face (z = hd) — 30% ──
+  const frontN = Math.floor(COUNT * 0.30);
+  for (let i = 0; i < frontN; i++, idx++) {
+    const { x, y } = shapeXY();
+    set(idx, x, y, hd + (Math.random() - 0.5) * 0.008);
+  }
+
+  // ── Back face (z = -hd) — 20% ──
+  const backN = Math.floor(COUNT * 0.20);
+  for (let i = 0; i < backN; i++, idx++) {
+    const { x, y } = shapeXY();
+    set(idx, x, y, -hd + (Math.random() - 0.5) * 0.008);
+  }
+
+  // ── Volume body (z random -hd..hd) — 30% ──
+  const bodyN = Math.floor(COUNT * 0.30);
+  for (let i = 0; i < bodyN; i++, idx++) {
+    const { x, y } = shapeXY();
+    set(idx, x, y, (Math.random() - 0.5) * 2 * hd);
+  }
+
+  // ── Rounded corner blobs — 12% ──
+  const cornerN = Math.floor(COUNT * 0.12);
+  const cr = strokeW * 0.75; // corner radius
+  for (let i = 0; i < cornerN; i++, idx++) {
+    const c = corners[i % 5];
+    // Uniform distribution inside a sphere
+    const u = Math.random();
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = cr * Math.cbrt(u);
+    set(idx, c.x + r * Math.sin(phi) * Math.cos(theta), c.y + r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+  }
+
+  // ── Edge loop — fill remaining with boundary-edge emphasis ──
+  while (idx < COUNT) {
+    // Favour the stroke outline for edge definition
+    const r = Math.random();
+    let x: number, y: number;
+    if (r < 0.45) {
+      // > top arm, forced to edge
+      const t = Math.random();
+      const dx = px - ax, dy = py - ayT;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const nx = -dy / len, ny = dx / len;
+      const side = Math.random() < 0.5 ? 1 : -1;
+      x = ax + dx * t + nx * strokeW * 0.5 * side;
+      y = ayT + dy * t + ny * strokeW * 0.5 * side;
+    } else if (r < 0.90) {
+      // > bottom arm, forced to edge
+      const t = Math.random();
+      const dx = px - ax, dy = py - ayB;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const nx = -dy / len, ny = dx / len;
+      const side = Math.random() < 0.5 ? 1 : -1;
+      x = ax + dx * t + nx * strokeW * 0.5 * side;
+      y = ayB + dy * t + ny * strokeW * 0.5 * side;
+    } else {
+      // _ underscore edges
+      x = usX0 + Math.random() * (usX1 - usX0);
+      y = usY + (Math.random() < 0.5 ? 1 : -1) * strokeW * 0.6;
+    }
+    // Wide z spread for extrusion sides
+    set(idx, x, y, (Math.random() - 0.5) * 2 * hd * 1.15);
+    idx++;
+  }
+
+  return { positions, radials };
+}
+
 // ── Morphing Particle System ──────────────────────────────────────
 
-function Particles({ morphProgress }: { morphProgress: MotionValue<number> }) {
+function Particles({
+  phoneProgress,
+  terminalProgress,
+}: {
+  phoneProgress: MotionValue<number>;
+  terminalProgress: MotionValue<number>;
+}) {
   const pointsRef = useRef<THREE.Points>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const lastCursor = useRef({ x: 0, y: 0, z: 0 });
-  const lastMorph = useRef(-1);
+  const lastPhone = useRef(-1);
+  const lastTerminal = useRef(-1);
 
   const springX = useSpring(mouseX, { stiffness: 90, damping: 16 });
   const springY = useSpring(mouseY, { stiffness: 90, damping: 16 });
 
   const sphere = useMemo(() => generateSphere(), []);
   const phone = useMemo(() => generatePhone(), []);
+  const terminal = useMemo(() => generateTerminal(), []);
 
   // Per-particle morph delay: inner particles (closer to origin) morph first
   const delays = useMemo(() => {
@@ -147,7 +288,8 @@ function Particles({ morphProgress }: { morphProgress: MotionValue<number> }) {
   }, [mouseX, mouseY]);
 
   useFrame(({ clock }) => {
-    const t = morphProgress.get();
+    const phoneT = phoneProgress.get();
+    const terminalT = terminalProgress.get();
     const mx = springX.get();
     const my = springY.get();
 
@@ -163,18 +305,23 @@ function Particles({ morphProgress }: { morphProgress: MotionValue<number> }) {
       Math.abs(cx - lastCursor.current.x) > 0.003 ||
       Math.abs(cy - lastCursor.current.y) > 0.003 ||
       Math.abs(cz - lastCursor.current.z) > 0.003;
-    const morphChanged = Math.abs(t - lastMorph.current) > 0.0005;
+    const phoneChanged = Math.abs(phoneT - lastPhone.current) > 0.0005;
+    const terminalChanged = Math.abs(terminalT - lastTerminal.current) > 0.0005;
+    const morphChanged = phoneChanged || terminalChanged;
 
     // Only run the expensive vertex loop when something actually changed
     if (cursorMoved || morphChanged) {
       lastCursor.current = { x: cx, y: cy, z: cz };
-      lastMorph.current = t;
+      lastPhone.current = phoneT;
+      lastTerminal.current = terminalT;
 
       const pos = pointsRef.current!.geometry.attributes.position;
       const sp = sphere.positions;
       const sr = sphere.radials;
       const pp = phone.positions;
       const pr = phone.radials;
+      const tp = terminal.positions;
+      const tr = terminal.radials;
 
       const sigma = 0.65;
       const maxDisp = 0.38;
@@ -184,19 +331,33 @@ function Particles({ morphProgress }: { morphProgress: MotionValue<number> }) {
       for (let i = 0; i < COUNT; i++) {
         const i3 = i * 3;
 
-        // ── Staggered morph interpolation ──
+        // ── Stage 1: sphere → phone (staggered) ──
         const delay = delays[i];
-        const pt = Math.max(0, Math.min(1, (t - (1 - delay) * 0.25) / 0.75));
-        const eased = pt < 0.5 ? 2 * pt * pt : 1 - Math.pow(-2 * pt + 2, 2) / 2;
+        const pt1 = Math.max(0, Math.min(1, (phoneT - (1 - delay) * 0.25) / 0.75));
+        const eased1 = pt1 < 0.5 ? 2 * pt1 * pt1 : 1 - Math.pow(-2 * pt1 + 2, 2) / 2;
 
-        const bx = sp[i3] + (pp[i3] - sp[i3]) * eased;
-        const by = sp[i3 + 1] + (pp[i3 + 1] - sp[i3 + 1]) * eased;
-        const bz = sp[i3 + 2] + (pp[i3 + 2] - sp[i3 + 2]) * eased;
+        // Base position after stage 1
+        const s1x = sp[i3] + (pp[i3] - sp[i3]) * eased1;
+        const s1y = sp[i3 + 1] + (pp[i3 + 1] - sp[i3 + 1]) * eased1;
+        const s1z = sp[i3 + 2] + (pp[i3 + 2] - sp[i3 + 2]) * eased1;
 
-        // Interpolate radial direction
-        const rx = sr[i3] + (pr[i3] - sr[i3]) * eased;
-        const ry = sr[i3 + 1] + (pr[i3 + 1] - sr[i3 + 1]) * eased;
-        const rz = sr[i3 + 2] + (pr[i3 + 2] - sr[i3 + 2]) * eased;
+        // Base radial after stage 1
+        const s1rx = sr[i3] + (pr[i3] - sr[i3]) * eased1;
+        const s1ry = sr[i3 + 1] + (pr[i3 + 1] - sr[i3 + 1]) * eased1;
+        const s1rz = sr[i3 + 2] + (pr[i3 + 2] - sr[i3 + 2]) * eased1;
+
+        // ── Stage 2: stage1 → terminal (staggered) ──
+        const pt2 = Math.max(0, Math.min(1, (terminalT - (1 - delay) * 0.25) / 0.75));
+        const eased2 = pt2 < 0.5 ? 2 * pt2 * pt2 : 1 - Math.pow(-2 * pt2 + 2, 2) / 2;
+
+        const bx = s1x + (tp[i3] - s1x) * eased2;
+        const by = s1y + (tp[i3 + 1] - s1y) * eased2;
+        const bz = s1z + (tp[i3 + 2] - s1z) * eased2;
+
+        // Final radial
+        const rx = s1rx + (tr[i3] - s1rx) * eased2;
+        const ry = s1ry + (tr[i3 + 1] - s1ry) * eased2;
+        const rz = s1rz + (tr[i3 + 2] - s1rz) * eased2;
         const rlen = Math.sqrt(rx * rx + ry * ry + rz * rz) || 1;
 
         // ── Liquid displacement ──
@@ -318,7 +479,13 @@ function CursorSpotlight() {
 
 // ── Scene ─────────────────────────────────────────────────────────
 
-function Scene({ morphProgress }: { morphProgress: MotionValue<number> }) {
+function Scene({
+  phoneProgress,
+  terminalProgress,
+}: {
+  phoneProgress: MotionValue<number>;
+  terminalProgress: MotionValue<number>;
+}) {
   return (
     <>
       <ambientLight intensity={0.35} />
@@ -337,7 +504,7 @@ function Scene({ morphProgress }: { morphProgress: MotionValue<number> }) {
         <meshBasicMaterial color="#ffffff" transparent opacity={0.025} depthWrite={false} side={THREE.BackSide} />
       </mesh>
       <OrbitingRing />
-      <Particles morphProgress={morphProgress} />
+      <Particles phoneProgress={phoneProgress} terminalProgress={terminalProgress} />
       <Environment preset="studio" environmentIntensity={0.3} />
     </>
   );
@@ -345,7 +512,13 @@ function Scene({ morphProgress }: { morphProgress: MotionValue<number> }) {
 
 // ── Export — persistent full-page background ──────────────────────
 
-export function BackgroundCanvas({ morphProgress }: { morphProgress: MotionValue<number> }) {
+export function BackgroundCanvas({
+  phoneProgress,
+  terminalProgress,
+}: {
+  phoneProgress: MotionValue<number>;
+  terminalProgress: MotionValue<number>;
+}) {
   return (
     <div className="fixed inset-0 -z-10 pointer-events-none">
       <Canvas
@@ -360,7 +533,7 @@ export function BackgroundCanvas({ morphProgress }: { morphProgress: MotionValue
         }}
       >
         <Suspense fallback={null}>
-          <Scene morphProgress={morphProgress} />
+          <Scene phoneProgress={phoneProgress} terminalProgress={terminalProgress} />
         </Suspense>
       </Canvas>
     </div>
