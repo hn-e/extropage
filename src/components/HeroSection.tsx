@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { HeroCanvas } from "./HeroCanvas";
 
 function FloatingLabel({
   text,
@@ -61,60 +60,15 @@ export function HeroSection() {
       id="hero"
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
     >
-      <HeroCanvas />
-
-      {/* Floating tech labels */}
-      <FloatingLabel
-        text="React"
-        x="8%"
-        y="25%"
-        delay={3.0}
-        duration={5}
-      />
-      <FloatingLabel
-        text="Next.js"
-        x="82%"
-        y="20%"
-        delay={3.2}
-        duration={5.5}
-      />
-      <FloatingLabel
-        text="Python"
-        x="12%"
-        y="72%"
-        delay={3.4}
-        duration={6}
-      />
-      <FloatingLabel
-        text="AWS"
-        x="78%"
-        y="75%"
-        delay={3.6}
-        duration={5.8}
-      />
-      <FloatingLabel
-        text="Docker"
-        x="5%"
-        y="50%"
-        delay={3.8}
-        duration={6.2}
-      />
-      <FloatingLabel
-        text="Laravel"
-        x="88%"
-        y="48%"
-        delay={4.0}
-        duration={5.3}
-      />
 
       {/* Gradient overlays */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/15 to-[#0a0a0a] pointer-events-none z-0" />
+      {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/15 to-[#0a0a0a] pointer-events-none z-0" /> */}
       <div
         className="absolute inset-0 pointer-events-none z-0"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.7) 100%)",
-        }}
+        // style={{
+        //   background:
+        //     "radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.7) 100%)",
+        // }}
       />
       {/* Subtle center glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none z-0 bg-glow-radial animate-breathe" />

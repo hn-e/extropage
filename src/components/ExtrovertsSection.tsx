@@ -1,177 +1,7 @@
 "use client";
 
-import { useRef, useEffect, Suspense, useState } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { RoundedBox, Float, Environment } from "@react-three/drei";
-import * as THREE from "three";
-import { TextureLoader } from "three";
-
-/* ──────────── Textured Screen ──────────── */
-
-function ScreenDisplay() {
-  const texture = useLoader(TextureLoader, "/assets/1.png");
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
-
-  return (
-    <group>
-      {/* Screen with app screenshot */}
-      <mesh position={[0, 0, 0.062]}>
-        <planeGeometry args={[1.25, 2.7]} />
-        <meshBasicMaterial
-          map={texture}
-          toneMapped={false}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
-
-      {/* Glass reflection layer */}
-      <mesh position={[0, 0, 0.064]}>
-        <planeGeometry args={[1.25, 2.7]} />
-        <meshPhysicalMaterial
-          color="#ffffff"
-          metalness={0}
-          roughness={1}
-          transparent
-          opacity={0.06}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
-
-      {/* Subtle reflection stripe */}
-      <mesh position={[0, 0.5, 0.065]}>
-        <planeGeometry args={[1, 0.6]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.03}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-/* ──────────── 3D Phone Model ──────────── */
-
-function PhoneModel() {
-  const phoneRef = useRef<THREE.Group>(null);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 60, damping: 30 });
-  const springY = useSpring(mouseY, { stiffness: 60, damping: 30 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set((e.clientX / window.innerWidth) * 2 - 1);
-      mouseY.set(-(e.clientY / window.innerHeight) * 2 + 1);
-    };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
-
-  useFrame(({ clock }) => {
-    if (phoneRef.current) {
-      phoneRef.current.rotation.y =
-        springX.get() * 0.25 + Math.sin(clock.elapsedTime * 0.2) * 0.08;
-      phoneRef.current.rotation.x =
-        springY.get() * 0.2 + Math.cos(clock.elapsedTime * 0.15) * 0.05;
-    }
-  });
-
-  return (
-    <group ref={phoneRef}>
-      <Float speed={1.8} rotationIntensity={0.06} floatIntensity={0.2}>
-        <group>
-          {/* Phone body */}
-          <RoundedBox
-            args={[1.6, 3.2, 0.12]}
-            radius={0.2}
-            smoothness={4}
-          >
-            <meshPhysicalMaterial
-              color="#262626"
-              metalness={0.85}
-              roughness={0.18}
-              clearcoat={1}
-              clearcoatRoughness={0.05}
-              reflectivity={1}
-              envMapIntensity={0.4}
-            />
-          </RoundedBox>
-
-          {/* Metallic frame edge */}
-          <RoundedBox
-            args={[1.64, 3.24, 0.04]}
-            radius={0.22}
-            smoothness={4}
-          >
-            <meshPhysicalMaterial
-              color="#c8c8c8"
-              metalness={0.95}
-              roughness={0.08}
-              clearcoat={0.5}
-              clearcoatRoughness={0.1}
-              reflectivity={1}
-              envMapIntensity={0.6}
-            />
-          </RoundedBox>
-
-          {/* Screen background */}
-          <mesh position={[0, 0, 0.06]}>
-            <planeGeometry args={[1.35, 2.85]} />
-            <meshBasicMaterial
-              color="#000000"
-              side={THREE.DoubleSide}
-              depthWrite={false}
-            />
-          </mesh>
-
-          {/* Real screenshot texture */}
-          <Suspense fallback={null}>
-            <ScreenDisplay />
-          </Suspense>
-
-          {/* Camera notch / dynamic island */}
-          <RoundedBox
-            args={[0.35, 0.06, 0.01]}
-            radius={0.03}
-            smoothness={2}
-            position={[0, 1.45, 0.07]}
-          >
-            <meshPhysicalMaterial
-              color="#181818"
-              metalness={0.15}
-              roughness={0.3}
-              envMapIntensity={0.1}
-            />
-          </RoundedBox>
-        </group>
-      </Float>
-    </group>
-  );
-}
-
-/* ──────────── 3D Scene ──────────── */
-
-function PhoneScene() {
-  return (
-    <>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[4, 3, 5]} intensity={3} color="#ffffff" />
-      <pointLight position={[-3, -1, -3]} intensity={1.2} color="#a1a1aa" />
-      <pointLight position={[0, 2, -4]} intensity={0.8} color="#f5f5f5" />
-      <pointLight position={[0, -3, 2]} intensity={0.5} color="#52525b" />
-      <PhoneModel />
-      <Environment preset="studio" environmentIntensity={0.4} />
-    </>
-  );
-}
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 /* ──────────── Screenshot Gallery Card ──────────── */
 
@@ -329,28 +159,15 @@ export function ExtrovertsSection() {
 
       {/* ── Main Two-Column Layout ── */}
       <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center min-h-[600px]">
-        {/* Left: 3D Phone — fixed position, no scroll animation */}
+        {/* Left: Phone display area — 3D phone rendered by global background canvas */}
         <motion.div
           style={{ opacity: sectionOpacity }}
           className="relative h-[550px] sm:h-[650px] lg:h-[700px] order-2 lg:order-1"
         >
-          <Canvas
-            camera={{ position: [0, 0, 6], fov: 38, near: 0.1, far: 50 }}
-            dpr={[1, 2]}
-            performance={{ min: 0.5 }}
-            gl={{
-              antialias: true,
-              alpha: true,
-              toneMapping: THREE.ACESFilmicToneMapping,
-              toneMappingExposure: 1.3,
-            }}
-          >
-            <Suspense fallback={null}>
-              <PhoneScene />
-            </Suspense>
-          </Canvas>
+          {/* The phone shape is rendered by the persistent BackgroundCanvas particles.
+              This column serves as layout spacing so the text flows alongside it. */}
 
-          {/* Glow under the phone */}
+          {/* Subtle glow under where the phone appears */}
           <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[300px] h-4 bg-white/[0.02] blur-3xl rounded-full pointer-events-none" />
         </motion.div>
 
