@@ -13,15 +13,19 @@ function BlobMesh() {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const basePositions = useRef<Float32Array | null>(null);
+  const baseRadials = useRef<Float32Array | null>(null);
+  const lastCursor = useRef({ x: 0, y: 0, z: 0 });
 
-  const springX = useSpring(mouseX, { stiffness: 100, damping: 22 });
-  const springY = useSpring(mouseY, { stiffness: 100, damping: 22 });
+  const springX = useSpring(mouseX, { stiffness: 100, damping: 18 });
+  const springY = useSpring(mouseY, { stiffness: 100, damping: 18 });
 
   const geometry = useMemo(() => {
-    const geo = new THREE.IcosahedronGeometry(1.8, 32);
+    const geo = new THREE.IcosahedronGeometry(1.8, 48);
     const pos = geo.attributes.position;
+    const count = pos.count;
+    const radials = new Float32Array(count * 3);
 
-    for (let i = 0; i < pos.count; i++) {
+    for (let i = 0; i < count; i++) {
       const x = pos.getX(i);
       const y = pos.getY(i);
       const z = pos.getZ(i);
@@ -36,16 +40,27 @@ function BlobMesh() {
         Math.sin(nx * 7.0 + 1.5) * Math.cos(nz * 7.0) * 0.08 +
         Math.cos(ny * 5.5 + 2.0) * Math.sin(nx * 5.5) * 0.06;
 
-      pos.setXYZ(i, x + nx * noise, y + ny * noise, z + nz * noise);
+      const bx = x + nx * noise;
+      const by = y + ny * noise;
+      const bz = z + nz * noise;
+
+      pos.setXYZ(i, bx, by, bz);
+
+      // Pre-compute radial direction (avoids sqrt + normalize per frame)
+      const blen = Math.sqrt(bx * bx + by * by + bz * bz);
+      radials[i * 3] = bx / blen;
+      radials[i * 3 + 1] = by / blen;
+      radials[i * 3 + 2] = bz / blen;
     }
 
     geo.computeVertexNormals();
     basePositions.current = new Float32Array(pos.array);
+    baseRadials.current = radials;
     return geo;
   }, []);
 
   const wireframeGeo = useMemo(() => {
-    return new THREE.IcosahedronGeometry(1.85, 60);
+    return new THREE.IcosahedronGeometry(1.85, 80);
   }, []);
 
   useEffect(() => {
@@ -62,7 +77,7 @@ function BlobMesh() {
     const mx = springX.get();
     const my = springY.get();
 
-    // Map cursor to a 3D point on a virtual sphere around the blob
+    // Map cursor to 3D point on sphere
     const theta = mx * Math.PI;
     const phi = my * Math.PI * 0.45;
     const R = 1.8;
@@ -70,18 +85,32 @@ function BlobMesh() {
     const cy = R * Math.sin(phi);
     const cz = R * Math.cos(phi) * Math.cos(theta);
 
-    // --- Vertex displacement: bulge toward cursor ---
-    if (meshRef.current && basePositions.current) {
+    // Only displace if cursor moved noticeably (skips redundant work)
+    const lc = lastCursor.current;
+    const moved =
+      Math.abs(cx - lc.x) > 0.003 ||
+      Math.abs(cy - lc.y) > 0.003 ||
+      Math.abs(cz - lc.z) > 0.003;
+
+    if (moved && meshRef.current && basePositions.current && baseRadials.current) {
+      lc.x = cx;
+      lc.y = cy;
+      lc.z = cz;
+
       const pos = meshRef.current.geometry.attributes.position;
+      const bp = basePositions.current;
+      const br = baseRadials.current;
       const sigma = 0.65;
       const maxDisp = 0.38;
+      const twoSigmaSq = 2 * sigma * sigma;
       const cutoffSq = 3.5;
+      const count = pos.count;
 
-      for (let i = 0; i < pos.count; i++) {
+      for (let i = 0; i < count; i++) {
         const i3 = i * 3;
-        const bx = basePositions.current[i3];
-        const by = basePositions.current[i3 + 1];
-        const bz = basePositions.current[i3 + 2];
+        const bx = bp[i3];
+        const by = bp[i3 + 1];
+        const bz = bp[i3 + 2];
 
         const dx = bx - cx;
         const dy = by - cy;
@@ -89,34 +118,23 @@ function BlobMesh() {
         const dSq = dx * dx + dy * dy + dz * dz;
 
         if (dSq < cutoffSq) {
-          const influence =
-            Math.exp(-dSq / (2 * sigma * sigma)) * maxDisp;
-          const len = Math.sqrt(bx * bx + by * by + bz * bz);
-          const nx = bx / len;
-          const ny = by / len;
-          const nz = bz / len;
-
-          pos.setXYZ(
-            i,
-            bx + nx * influence,
-            by + ny * influence,
-            bz + nz * influence,
-          );
+          const t = Math.exp(-dSq / twoSigmaSq) * maxDisp;
+          pos.setXYZ(i, bx + br[i3] * t, by + br[i3 + 1] * t, bz + br[i3 + 2] * t);
         } else {
           pos.setXYZ(i, bx, by, bz);
         }
       }
 
       pos.needsUpdate = true;
-      meshRef.current.geometry.computeVertexNormals();
+      // Normals NOT recomputed — base normals are close enough for subtle displacement
     }
 
-    // --- Subtle rotation (reduced — deformation is the star now) ---
+    // Subtle rotation
     if (meshRef.current) {
       meshRef.current.rotation.x =
-        mx * 0.15 + Math.sin(clock.elapsedTime * 0.15) * 0.05;
+        mx * 0.12 + Math.sin(clock.elapsedTime * 0.15) * 0.05;
       meshRef.current.rotation.y =
-        my * 0.15 + clock.elapsedTime * 0.06;
+        my * 0.12 + clock.elapsedTime * 0.06;
       meshRef.current.rotation.z =
         Math.cos(clock.elapsedTime * 0.12) * 0.04;
     }
@@ -131,7 +149,7 @@ function BlobMesh() {
   return (
     <group>
       <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.4}>
-        {/* Main blob */}
+        {/* Main blob — JS vertex displacement */}
         <mesh ref={meshRef} geometry={geometry}>
           <meshPhysicalMaterial
             color="#f0f0f0"
@@ -235,28 +253,47 @@ function Particles() {
   const particlesRef = useRef<THREE.Points>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const basePositions = useRef<Float32Array | null>(null);
+  const baseRadials = useRef<Float32Array | null>(null);
+  const lastCursor = useRef({ x: 0, y: 0, z: 0 });
 
-  const springX = useSpring(mouseX, { stiffness: 20, damping: 25 });
-  const springY = useSpring(mouseY, { stiffness: 20, damping: 25 });
+  const springX = useSpring(mouseX, { stiffness: 90, damping: 16 });
+  const springY = useSpring(mouseY, { stiffness: 90, damping: 16 });
 
   const geometry = useMemo(() => {
-    const count = 600;
+    const count = 7000;
     const positions = new Float32Array(count * 3);
-    const sizes = new Float32Array(count);
+    const radials = new Float32Array(count * 3);
+    const phiGold = Math.PI * (3 - Math.sqrt(5));
 
     for (let i = 0; i < count; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      const radius = 2.1 + Math.random() * 2.2;
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
-      sizes[i] = Math.random() * 0.008 + 0.002;
+      // Fibonacci sphere — evenly spaced points on surface
+      const y = 1 - (i / (count - 1)) * 2;
+      const rAtY = Math.sqrt(1 - y * y);
+      const theta = phiGold * i;
+
+      // Slight radial scatter for depth
+      const r = 1.8 + (Math.random() - 0.5) * 0.15;
+
+      const x = Math.cos(theta) * rAtY * r;
+      const z = Math.sin(theta) * rAtY * r;
+      const wy = y * r;
+
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = wy;
+      positions[i * 3 + 2] = z;
+
+      // Pre-compute radial direction
+      const len = Math.sqrt(x * x + wy * wy + z * z);
+      radials[i * 3] = x / len;
+      radials[i * 3 + 1] = wy / len;
+      radials[i * 3 + 2] = z / len;
     }
 
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    geo.setAttribute("size", new THREE.BufferAttribute(sizes, 1));
+    basePositions.current = new Float32Array(positions);
+    baseRadials.current = radials;
     return geo;
   }, []);
 
@@ -265,27 +302,81 @@ function Particles() {
       mouseX.set((e.clientX / window.innerWidth) * 2 - 1);
       mouseY.set(-(e.clientY / window.innerHeight) * 2 + 1);
     };
-
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
   useFrame(({ clock }) => {
+    const mx = springX.get();
+    const my = springY.get();
+
+    // Map cursor to 3D point on sphere
+    const theta = mx * Math.PI;
+    const phi = my * Math.PI * 0.45;
+    const R = 1.8;
+    const cx = R * Math.cos(phi) * Math.sin(theta);
+    const cy = R * Math.sin(phi);
+    const cz = R * Math.cos(phi) * Math.cos(theta);
+
+    const lc = lastCursor.current;
+    const moved =
+      Math.abs(cx - lc.x) > 0.003 ||
+      Math.abs(cy - lc.y) > 0.003 ||
+      Math.abs(cz - lc.z) > 0.003;
+
+    if (moved && particlesRef.current && basePositions.current && baseRadials.current) {
+      lc.x = cx;
+      lc.y = cy;
+      lc.z = cz;
+
+      const pos = particlesRef.current.geometry.attributes.position;
+      const bp = basePositions.current;
+      const br = baseRadials.current;
+      const sigma = 0.65;
+      const maxDisp = 0.38;
+      const twoSigmaSq = 2 * sigma * sigma;
+      const cutoffSq = 3.5;
+      const count = pos.count;
+
+      for (let i = 0; i < count; i++) {
+        const i3 = i * 3;
+        const bx = bp[i3];
+        const by = bp[i3 + 1];
+        const bz = bp[i3 + 2];
+
+        const dx = bx - cx;
+        const dy = by - cy;
+        const dz = bz - cz;
+        const dSq = dx * dx + dy * dy + dz * dz;
+
+        if (dSq < cutoffSq) {
+          const t = Math.exp(-dSq / twoSigmaSq) * maxDisp;
+          pos.setXYZ(i, bx + br[i3] * t, by + br[i3 + 1] * t, bz + br[i3 + 2] * t);
+        } else {
+          pos.setXYZ(i, bx, by, bz);
+        }
+      }
+      pos.needsUpdate = true;
+    }
+
+    // Subtle rotation
     if (particlesRef.current) {
       particlesRef.current.rotation.x =
-        springY.get() * 0.15 + Math.sin(clock.elapsedTime * 0.08) * 0.05;
+        mx * 0.12 + Math.sin(clock.elapsedTime * 0.15) * 0.05;
       particlesRef.current.rotation.y =
-        springX.get() * 0.15 + clock.elapsedTime * 0.06;
+        mx * 0.12 + clock.elapsedTime * 0.06;
+      particlesRef.current.rotation.z =
+        Math.cos(clock.elapsedTime * 0.12) * 0.04;
     }
   });
 
   return (
     <points ref={particlesRef} geometry={geometry}>
       <pointsMaterial
-        size={0.005}
-        color="#ffffff"
+        size={0.008}
+        color="#f0f0f0"
         transparent
-        opacity={0.45}
+        opacity={0.7}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
         sizeAttenuation
@@ -339,7 +430,26 @@ function Scene() {
       <pointLight position={[0, -3, 2]} intensity={0.6} color="#a1a1aa" />
       <pointLight position={[-2, 3, -2]} intensity={0.8} color="#f5f5f5" />
       <CursorSpotlight />
-      <BlobMesh />
+      {/* Subtle center core — anchor for the particle field */}
+      <mesh>
+        <sphereGeometry args={[0.6, 32, 32]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.06}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh>
+        <sphereGeometry args={[1.2, 32, 32]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.025}
+          depthWrite={false}
+          side={THREE.BackSide}
+        />
+      </mesh>
       <OrbitingRing />
       <Particles />
       <Environment preset="studio" environmentIntensity={0.3} />
