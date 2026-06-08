@@ -125,7 +125,7 @@ export function PhoneShowcase() {
     <section
       ref={containerRef}
       id="phone-showcase"
-      className="relative min-h-screen flex flex-col items-center justify-center px-6"
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden"
     >
       {/* Ambient glow behind phone */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[900px] pointer-events-none opacity-15">
