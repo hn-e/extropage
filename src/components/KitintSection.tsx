@@ -20,16 +20,18 @@ const icons = [
   <path key="l" d="M12 2a10 10 0 0 1 0 20M12 2a10 10 0 0 0 0 20M2 12h20" />,
 ];
 
-const TOTAL_CELLS = 96;
+const TOTAL_CELLS = 60;
 const COLS_LG = 12;
 const COLS_SM = 8;
 const COLS = 6;
 
 const lineColors = [
-  "rgba(255,255,255,0.12)",
-  "rgba(74,222,128,0.15)",
-  "rgba(96,165,250,0.15)",
-  "rgba(192,132,252,0.15)",
+  "rgba(74,222,128,0.9)",   // neon green
+  "rgba(52,211,153,0.9)",   // emerald
+  "rgba(96,165,250,0.9)",   // neon blue
+  "rgba(167,139,250,0.9)",  // neon purple
+  "rgba(244,114,182,0.9)",  // neon pink
+  "rgba(250,204,21,0.85)",  // neon yellow
 ];
 
 function seededRandom(seed: number) {
@@ -58,7 +60,7 @@ export function KitintSection() {
   const chipCells = useMemo(() => {
     const rand = seededRandom(42);
     const set = new Set<number>();
-    while (set.size < 30) {
+    while (set.size < 20) {
       set.add(Math.floor(rand() * TOTAL_CELLS));
     }
     return set;
@@ -187,7 +189,7 @@ export function KitintSection() {
       </motion.div>
 
       {/* Grid — square cells, random glassmorph chips, glowing connections */}
-      <div ref={gridRef} className="relative w-full grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-12">
+      <div ref={gridRef} className="relative m-24 bg-black/70 rounded-2xl grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-12">
         {/* SVG orthogonal mind-map lines */}
         {gridW > 0 && (
           <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
@@ -197,26 +199,40 @@ export function KitintSection() {
               // Orthogonal path: horizontal then vertical (or vice versa)
               const hFirst = i % 2 === 0;
               const d = hFirst
-                ? `M ${ca.x} ${ca.y} L ${cb.x} ${ca.y} L ${cb.x} ${cb.y}`
-                : `M ${ca.x} ${ca.y} L ${ca.x} ${cb.y} L ${cb.x} ${cb.y}`;
-              const dur = 2.5 + (i % 3) * 0.6;
+                ? `M ${ca.x} ${ca.y} Q ${cb.x} ${ca.y} ${cb.x} ${cb.y}`
+                : `M ${ca.x} ${ca.y} Q ${ca.x} ${cb.y} ${cb.x} ${cb.y}`;
+              const dur = 10 + (i % 5) * 2;
               return (
                 <g key={i}>
-                  {/* Glow layer */}
+                  {/* Outer glow */}
                   <motion.path
                     d={d}
                     fill="none"
                     stroke={color}
-                    strokeWidth={4}
+                    strokeWidth={8}
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    opacity={0.25}
-                    style={{ filter: `blur(4px)` }}
+                    opacity={0.12}
+                    style={{ filter: `blur(8px)` }}
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: [0, 1, 1, 0] }}
                     transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
                   />
-                  {/* Core line */}
+                  {/* Mid glow */}
+                  <motion.path
+                    d={d}
+                    fill="none"
+                    stroke={color}
+                    strokeWidth={3}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    opacity={0.35}
+                    style={{ filter: `blur(3px)` }}
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: [0, 1, 1, 0] }}
+                    transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
+                  />
+                  {/* Core */}
                   <motion.path
                     d={d}
                     fill="none"
@@ -227,7 +243,7 @@ export function KitintSection() {
                     initial={{ pathLength: 0 }}
                     animate={{ pathLength: [0, 1, 1, 0] }}
                     transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
-                    style={{ filter: `drop-shadow(0 0 8px ${color})` }}
+                    style={{ filter: `drop-shadow(0 0 14px ${color}) drop-shadow(0 0 6px ${color})` }}
                   />
                 </g>
               );
@@ -241,7 +257,7 @@ export function KitintSection() {
           return (
             <div
               key={i}
-              className="aspect-square border border-white/[0.04] flex items-center justify-center"
+              className="aspect-square flex items-center justify-center relative z-[2]"
             >
               {hasChip && iconIdx !== undefined && (
                 <div className="w-3/5 aspect-square rounded-xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-sm flex items-center justify-center">
