@@ -2,22 +2,52 @@
 
 import { useRef, useMemo, useState, useEffect } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import {
+  SiReact,
+  SiNextdotjs,
+  SiTypescript,
+  SiPython,
+  SiDocker,
+  SiTailwindcss,
+  SiNodedotjs,
+  SiPostgresql,
+  SiMongodb,
+  SiRedis,
+  SiCloudflare,
+  SiVercel,
+  SiGit,
+  SiFigma,
+  SiGraphql,
+  SiRust,
+  SiVuedotjs,
+  SiSvelte,
+  SiPrisma,
+  SiVite,
+} from "react-icons/si";
 
 /* ──────────── Icons ─────────────────────────────────────────────── */
 
 const icons = [
-  <path key="a" d="M8 2L4 6l4 4M16 2l4 4-4 4M3 12h18" />,
-  <path key="b" d="M16 18l6-6-6-6M8 6l-6 6 6 6" />,
-  <g key="c"><rect x="3" y="3" width="18" height="18" rx="3" /><path d="M8 12h8M12 8v8" /></g>,
-  <path key="d" d="M5 12h14M12 5l7 7-7 7" />,
-  <g key="e"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></g>,
-  <path key="f" d="M7 7h10l-5 10V7" />,
-  <path key="g" d="M4 4l7 7-7 7M13 4l7 7-7 7" />,
-  <g key="h"><rect x="4" y="4" width="6" height="6" rx="1" /><rect x="14" y="4" width="6" height="6" rx="1" /><rect x="4" y="14" width="6" height="6" rx="1" /><rect x="14" y="14" width="6" height="6" rx="1" /></g>,
-  <path key="i" d="M2 8h20M2 16h20M8 2v20M16 2v20" />,
-  <path key="j" d="M12 2L2 22h20L12 2z" />,
-  <g key="k"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="4" /></g>,
-  <path key="l" d="M12 2a10 10 0 0 1 0 20M12 2a10 10 0 0 0 0 20M2 12h20" />,
+  SiReact,
+  SiNextdotjs,
+  SiTypescript,
+  SiPython,
+  SiDocker,
+  SiTailwindcss,
+  SiNodedotjs,
+  SiPostgresql,
+  SiMongodb,
+  SiRedis,
+  SiCloudflare,
+  SiVercel,
+  SiGit,
+  SiFigma,
+  SiGraphql,
+  SiRust,
+  SiVuedotjs,
+  SiSvelte,
+  SiPrisma,
+  SiVite,
 ];
 
 const TOTAL_CELLS = 60;
@@ -40,6 +70,102 @@ function seededRandom(seed: number) {
     s = (s * 16807) % 2147483647;
     return (s - 1) / 2147483646;
   };
+}
+
+/* ──────────── Terminal ───────────────────────────────────────────── */
+
+const terminalLines = [
+  { text: "$ kitint create my-app", delay: 0.3 },
+  { text: "Generating project structure...", delay: 1.2 },
+  { text: "Creating files — src/, public/, config/", delay: 2.0 },
+  { text: "Installing dependencies  ████████████ 100%", delay: 2.8 },
+  { text: "Project ready!  ✨", delay: 3.6 },
+];
+
+function Terminal() {
+  const [visible, setVisible] = useState(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const timers: NodeJS.Timeout[] = [];
+    terminalLines.forEach((_, i) => {
+      const t = setTimeout(() => {
+        setVisible(i + 1);
+        if (i === terminalLines.length - 1) {
+          setTimeout(() => setDone(true), 600);
+        }
+      }, terminalLines[i].delay * 1000);
+      timers.push(t);
+    });
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  return (
+    <div className="w-full max-w-lg mx-auto -mt-24 pb-20 px-6 z-[4]">
+      <div
+        className="font-mono text-xs rounded-xl overflow-hidden"
+        style={{
+          background: "rgba(0, 0, 0, 1)",
+          border: "1px solid rgba(74, 222, 128, 0.10)",
+          boxShadow: "0 0 60px rgba(74, 222, 128, 0.06)",
+        }}
+      >
+        {/* Title bar */}
+        <div
+          className="flex items-center gap-2 px-4 py-2.5"
+          style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.04)" }}
+        >
+          <span className="w-2.5 h-2.5 rounded-full bg-red-500/30" />
+          <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/30" />
+          <span className="w-2.5 h-2.5 rounded-full bg-green-500/30" />
+          <span className="ml-2 text-[10px] text-white/15">terminal — kitint</span>
+        </div>
+
+        {/* Terminal body */}
+        <div className="px-4 py-4 space-y-2 text-left">
+          {terminalLines.map((line, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -6 }}
+              animate={i < visible ? { opacity: 1, x: 0 } : { opacity: 0, x: -6 }}
+              transition={{ duration: 0.4 }}
+              className="flex items-center gap-2"
+            >
+              <span style={{ color: "rgba(74, 222, 128, 0.5)" }}>$</span>
+              <span className={i === 0 ? "text-white/50" : "text-white/25"}>
+                {line.text}
+              </span>
+            </motion.div>
+          ))}
+
+          {/* CTA Button */}
+          {done && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex justify-center pt-4"
+            >
+              <a
+                href="https://kitinit.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border border-white/[0.10] bg-white/[0.03] hover:bg-white/[0.06] transition-all duration-300 text-sm text-white/50 hover:text-white/70"
+                style={{
+                  boxShadow: "0 0 30px rgba(74, 222, 128, 0.08)",
+                }}
+              >
+                Try Kitint
+                <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none">
+                  <path d="M3 9L9 3M9 3H5M9 3V7" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* ──────────── Section ───────────────────────────────────────────── */
@@ -118,7 +244,7 @@ export function KitintSection() {
     <section
       ref={containerRef}
       id="kitint"
-      className="relative min-h-screen flex flex-col items-center pt-24 overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center pt-24"
     >
       {/* Ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[900px] pointer-events-none opacity-12">
@@ -189,7 +315,7 @@ export function KitintSection() {
       </motion.div>
 
       {/* Grid — square cells, random glassmorph chips, glowing connections */}
-      <div ref={gridRef} className="relative m-24 bg-black/70 rounded-2xl grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-12">
+      <div ref={gridRef} className="relative w-full bg-black grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-12">
         {/* SVG orthogonal mind-map lines */}
         {gridW > 0 && (
           <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
@@ -259,25 +385,22 @@ export function KitintSection() {
               key={i}
               className="aspect-square flex items-center justify-center relative z-[2]"
             >
-              {hasChip && iconIdx !== undefined && (
-                <div className="w-3/5 aspect-square rounded-xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-sm flex items-center justify-center">
-                  <svg
-                    className="w-2/5 h-2/5"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="rgba(255,255,255,0.2)"
-                    strokeWidth={1.2}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    {icons[iconIdx]}
-                  </svg>
-                </div>
-              )}
+              {hasChip && iconIdx !== undefined && (() => {
+                const Icon = icons[iconIdx];
+                return (
+                  <div className="w-3/5 aspect-square rounded-xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-sm flex items-center justify-center">
+                    <Icon className="w-2/5 h-2/5 text-white/25" />
+                  </div>
+                );
+              })()}
             </div>
           );
         })}
       </div>
+
+      {/* ── Terminal ────────────────────────────────────────────────── */}
+      <Terminal />
+
     </section>
   );
 }
