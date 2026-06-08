@@ -34,9 +34,9 @@ export default function Home() {
         <PhoneShowcase />
         <KitintSection />
         <AboutSection />
-        <ExperienceSection />
-        <ExtrovertsSection />
-        <ProjectsSection />
+        {/* <ExperienceSection /> */}
+        {/* <ExtrovertsSection /> */}
+        {/* <ProjectsSection /> */}
         <ConnectSection />
       </main>
     </>

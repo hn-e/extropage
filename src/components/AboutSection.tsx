@@ -62,8 +62,7 @@ export function AboutSection() {
 
           <div className="space-y-5 text-white/40 leading-relaxed">
             <p className="text-sm sm:text-base">
-              I write software across the full stack — mobile, web, and backend.
-              B.S. in Programming &amp; Data Science from IIT Madras.
+              I code mobile web etc
             </p>
           </div>
 
