@@ -232,14 +232,59 @@ function generateTerminal() {
   return { positions, radials };
 }
 
-// ── Morphing Particle System ──────────────────────────────────────
+function generateCube() {
+  const positions = new Float32Array(COUNT * 3);
+  const radials = new Float32Array(COUNT * 3);
+  const h = 1.3; // half-size
+
+  const set = (i: number, x: number, y: number, z: number) => {
+    positions[i * 3] = x;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = z;
+    const len = Math.sqrt(x * x + y * y + z * z) || 1;
+    radials[i * 3] = x / len;
+    radials[i * 3 + 1] = y / len;
+    radials[i * 3 + 2] = z / len;
+  };
+
+  let idx = 0;
+  const faceN = Math.floor(COUNT / 6);
+
+  // +Z face
+  for (let i = 0; i < faceN; i++, idx++)
+    set(idx, (Math.random() - 0.5) * 2 * h, (Math.random() - 0.5) * 2 * h, h);
+
+  // -Z face
+  for (let i = 0; i < faceN; i++, idx++)
+    set(idx, (Math.random() - 0.5) * 2 * h, (Math.random() - 0.5) * 2 * h, -h);
+
+  // +Y face
+  for (let i = 0; i < faceN; i++, idx++)
+    set(idx, (Math.random() - 0.5) * 2 * h, h, (Math.random() - 0.5) * 2 * h);
+
+  // -Y face
+  for (let i = 0; i < faceN; i++, idx++)
+    set(idx, (Math.random() - 0.5) * 2 * h, -h, (Math.random() - 0.5) * 2 * h);
+
+  // +X face
+  for (let i = 0; i < faceN; i++, idx++)
+    set(idx, h, (Math.random() - 0.5) * 2 * h, (Math.random() - 0.5) * 2 * h);
+
+  // -X face (remaining)
+  while (idx < COUNT)
+    set(idx, -h, (Math.random() - 0.5) * 2 * h, (Math.random() - 0.5) * 2 * h), idx++;
+
+  return { positions, radials };
+}
 
 function Particles({
   phoneProgress,
   terminalProgress,
+  cubeProgress,
 }: {
   phoneProgress: MotionValue<number>;
   terminalProgress: MotionValue<number>;
+  cubeProgress: MotionValue<number>;
 }) {
   const pointsRef = useRef<THREE.Points>(null);
   const mouseX = useMotionValue(0);
@@ -247,6 +292,7 @@ function Particles({
   const lastCursor = useRef({ x: 0, y: 0, z: 0 });
   const lastPhone = useRef(-1);
   const lastTerminal = useRef(-1);
+  const lastCube = useRef(-1);
 
   const springX = useSpring(mouseX, { stiffness: 90, damping: 16 });
   const springY = useSpring(mouseY, { stiffness: 90, damping: 16 });
@@ -254,8 +300,8 @@ function Particles({
   const sphere = useMemo(() => generateSphere(), []);
   const phone = useMemo(() => generatePhone(), []);
   const terminal = useMemo(() => generateTerminal(), []);
+  const cube = useMemo(() => generateCube(), []);
 
-  // Per-particle morph delay: inner particles (closer to origin) morph first
   const delays = useMemo(() => {
     const d = new Float32Array(COUNT);
     const sp = sphere.positions;
@@ -290,10 +336,10 @@ function Particles({
   useFrame(({ clock }) => {
     const phoneT = phoneProgress.get();
     const terminalT = terminalProgress.get();
+    const cubeT = cubeProgress.get();
     const mx = springX.get();
     const my = springY.get();
 
-    // Cursor → 3D
     const theta = mx * Math.PI;
     const phi = my * Math.PI * 0.45;
     const R = 1.8;
@@ -305,15 +351,16 @@ function Particles({
       Math.abs(cx - lastCursor.current.x) > 0.003 ||
       Math.abs(cy - lastCursor.current.y) > 0.003 ||
       Math.abs(cz - lastCursor.current.z) > 0.003;
-    const phoneChanged = Math.abs(phoneT - lastPhone.current) > 0.0005;
-    const terminalChanged = Math.abs(terminalT - lastTerminal.current) > 0.0005;
-    const morphChanged = phoneChanged || terminalChanged;
+    const morphChanged =
+      Math.abs(phoneT - lastPhone.current) > 0.0005 ||
+      Math.abs(terminalT - lastTerminal.current) > 0.0005 ||
+      Math.abs(cubeT - lastCube.current) > 0.0005;
 
-    // Only run the expensive vertex loop when something actually changed
     if (cursorMoved || morphChanged) {
       lastCursor.current = { x: cx, y: cy, z: cz };
       lastPhone.current = phoneT;
       lastTerminal.current = terminalT;
+      lastCube.current = cubeT;
 
       const pos = pointsRef.current!.geometry.attributes.position;
       const sp = sphere.positions;
@@ -322,6 +369,8 @@ function Particles({
       const pr = phone.radials;
       const tp = terminal.positions;
       const tr = terminal.radials;
+      const cp = cube.positions;
+      const cr = cube.radials;
 
       const sigma = 0.65;
       const maxDisp = 0.38;
@@ -330,34 +379,43 @@ function Particles({
 
       for (let i = 0; i < COUNT; i++) {
         const i3 = i * 3;
-
-        // ── Stage 1: sphere → phone (staggered) ──
         const delay = delays[i];
+
+        // ── Stage 1: sphere → phone ──
         const pt1 = Math.max(0, Math.min(1, (phoneT - (1 - delay) * 0.25) / 0.75));
         const eased1 = pt1 < 0.5 ? 2 * pt1 * pt1 : 1 - Math.pow(-2 * pt1 + 2, 2) / 2;
 
-        // Base position after stage 1
         const s1x = sp[i3] + (pp[i3] - sp[i3]) * eased1;
         const s1y = sp[i3 + 1] + (pp[i3 + 1] - sp[i3 + 1]) * eased1;
         const s1z = sp[i3 + 2] + (pp[i3 + 2] - sp[i3 + 2]) * eased1;
 
-        // Base radial after stage 1
         const s1rx = sr[i3] + (pr[i3] - sr[i3]) * eased1;
         const s1ry = sr[i3 + 1] + (pr[i3 + 1] - sr[i3 + 1]) * eased1;
         const s1rz = sr[i3 + 2] + (pr[i3 + 2] - sr[i3 + 2]) * eased1;
 
-        // ── Stage 2: stage1 → terminal (staggered) ──
+        // ── Stage 2: stage1 → terminal ──
         const pt2 = Math.max(0, Math.min(1, (terminalT - (1 - delay) * 0.25) / 0.75));
         const eased2 = pt2 < 0.5 ? 2 * pt2 * pt2 : 1 - Math.pow(-2 * pt2 + 2, 2) / 2;
 
-        const bx = s1x + (tp[i3] - s1x) * eased2;
-        const by = s1y + (tp[i3 + 1] - s1y) * eased2;
-        const bz = s1z + (tp[i3 + 2] - s1z) * eased2;
+        const s2x = s1x + (tp[i3] - s1x) * eased2;
+        const s2y = s1y + (tp[i3 + 1] - s1y) * eased2;
+        const s2z = s1z + (tp[i3 + 2] - s1z) * eased2;
 
-        // Final radial
-        const rx = s1rx + (tr[i3] - s1rx) * eased2;
-        const ry = s1ry + (tr[i3 + 1] - s1ry) * eased2;
-        const rz = s1rz + (tr[i3 + 2] - s1rz) * eased2;
+        const s2rx = s1rx + (tr[i3] - s1rx) * eased2;
+        const s2ry = s1ry + (tr[i3 + 1] - s1ry) * eased2;
+        const s2rz = s1rz + (tr[i3 + 2] - s1rz) * eased2;
+
+        // ── Stage 3: stage2 → cube ──
+        const pt3 = Math.max(0, Math.min(1, (cubeT - (1 - delay) * 0.25) / 0.75));
+        const eased3 = pt3 < 0.5 ? 2 * pt3 * pt3 : 1 - Math.pow(-2 * pt3 + 2, 2) / 2;
+
+        const bx = s2x + (cp[i3] - s2x) * eased3;
+        const by = s2y + (cp[i3 + 1] - s2y) * eased3;
+        const bz = s2z + (cp[i3 + 2] - s2z) * eased3;
+
+        const rx = s2rx + (cr[i3] - s2rx) * eased3;
+        const ry = s2ry + (cr[i3 + 1] - s2ry) * eased3;
+        const rz = s2rz + (cr[i3 + 2] - s2rz) * eased3;
         const rlen = Math.sqrt(rx * rx + ry * ry + rz * rz) || 1;
 
         // ── Liquid displacement ──
@@ -379,12 +437,9 @@ function Particles({
 
     // Auto-revolution — always runs
     if (pointsRef.current) {
-      pointsRef.current.rotation.x =
-        my * 0.08 + Math.sin(clock.elapsedTime * 0.18) * 0.06;
-      pointsRef.current.rotation.y =
-        mx * 0.08 + clock.elapsedTime * 0.15;
-      pointsRef.current.rotation.z =
-        Math.cos(clock.elapsedTime * 0.14) * 0.06;
+      pointsRef.current.rotation.x = my * 0.08 + Math.sin(clock.elapsedTime * 0.18) * 0.06;
+      pointsRef.current.rotation.y = mx * 0.08 + clock.elapsedTime * 0.15;
+      pointsRef.current.rotation.z = Math.cos(clock.elapsedTime * 0.14) * 0.06;
     }
   });
 
@@ -482,9 +537,11 @@ function CursorSpotlight() {
 function Scene({
   phoneProgress,
   terminalProgress,
+  cubeProgress,
 }: {
   phoneProgress: MotionValue<number>;
   terminalProgress: MotionValue<number>;
+  cubeProgress: MotionValue<number>;
 }) {
   return (
     <>
@@ -504,7 +561,7 @@ function Scene({
         <meshBasicMaterial color="#ffffff" transparent opacity={0.025} depthWrite={false} side={THREE.BackSide} />
       </mesh>
       <OrbitingRing />
-      <Particles phoneProgress={phoneProgress} terminalProgress={terminalProgress} />
+      <Particles phoneProgress={phoneProgress} terminalProgress={terminalProgress} cubeProgress={cubeProgress} />
       <Environment preset="studio" environmentIntensity={0.3} />
     </>
   );
@@ -515,9 +572,11 @@ function Scene({
 export function BackgroundCanvas({
   phoneProgress,
   terminalProgress,
+  cubeProgress,
 }: {
   phoneProgress: MotionValue<number>;
   terminalProgress: MotionValue<number>;
+  cubeProgress: MotionValue<number>;
 }) {
   return (
     <div className="fixed inset-0 -z-10 pointer-events-none">
@@ -533,7 +592,7 @@ export function BackgroundCanvas({
         }}
       >
         <Suspense fallback={null}>
-          <Scene phoneProgress={phoneProgress} terminalProgress={terminalProgress} />
+          <Scene phoneProgress={phoneProgress} terminalProgress={terminalProgress} cubeProgress={cubeProgress} />
         </Suspense>
       </Canvas>
     </div>

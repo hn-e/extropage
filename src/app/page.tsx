@@ -22,12 +22,14 @@ export default function Home() {
 
   // phoneProgress: 0 = sphere, 1 = phone (first 10% of scroll)
   const phoneProgress = useTransform(scrollYProgress, [0, 0.10], [0, 1]);
-  // terminalProgress: 0 = phone, 1 = terminal (Kitint section, right after PhoneShowcase)
+  // terminalProgress: 0 = phone, 1 = terminal (Kitint section)
   const terminalProgress = useTransform(scrollYProgress, [0.22, 0.30], [0, 1]);
+  // cubeProgress: 0 = terminal, 1 = cube (About section)
+  const cubeProgress = useTransform(scrollYProgress, [0.38, 0.46], [0, 1]);
 
   return (
     <>
-      <BackgroundCanvas phoneProgress={phoneProgress} terminalProgress={terminalProgress} />
+      <BackgroundCanvas phoneProgress={phoneProgress} terminalProgress={terminalProgress} cubeProgress={cubeProgress} />
       <main ref={containerRef} className="relative">
         <Navbar />
         <HeroSection />
@@ -38,6 +40,15 @@ export default function Home() {
         {/* <ExtrovertsSection /> */}
         {/* <ProjectsSection /> */}
         <ConnectSection />
+
+        {/* Full-width image */}
+        <section className="w-full">
+          <img
+            src="/himanshu_soni.png"
+            alt="Himanshu Soni"
+            className="w-full h-auto block"
+          />
+        </section>
       </main>
     </>
   );
