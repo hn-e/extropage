@@ -98,9 +98,7 @@ export function HeroSection() {
           transition={{ delay: 2.4, duration: 1 }}
           className="font-heading text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tight"
         >
-          <span className="text-gradient-metallic">Full-stack</span>
-          <br />
-          <span className="text-gradient-silver">Developer</span>
+          <span className="text-gradient-metallic">"Honey, I'm a dev."</span>
         </motion.h1>
 
         {/* Domain Tagline */}
@@ -111,7 +109,7 @@ export function HeroSection() {
           style={{ y: textY }}
           className="mt-4"
         >
-          <p className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white/5 tracking-tighter select-none">
+          <p className="font-heading text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white/20 tracking-tighter select-none">
             honey.is-a.dev
           </p>
         </motion.div>
