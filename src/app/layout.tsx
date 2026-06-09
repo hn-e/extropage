@@ -26,6 +26,19 @@ export const metadata: Metadata = {
   title: "honey is a dev",
   description:
     "honey is a dev, mobile, web, kitinit, extroverts.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    other: [
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
   verification: {
     google: "ew84dA09uOb0TOrmOvKS69o3QseZeHkvb6H9djXtYoU",
   },
