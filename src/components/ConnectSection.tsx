@@ -2,75 +2,6 @@
 
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { Float } from "@react-three/drei";
-import * as THREE from "three";
-
-function ContactSphere() {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const glowRef = useRef<THREE.Mesh>(null);
-
-  useFrame(({ clock }) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y = clock.elapsedTime * 0.3;
-      meshRef.current.rotation.x = Math.sin(clock.elapsedTime * 0.2) * 0.2;
-    }
-    if (glowRef.current) {
-      glowRef.current.rotation.y = clock.elapsedTime * 0.2;
-      glowRef.current.rotation.x = Math.cos(clock.elapsedTime * 0.25) * 0.15;
-      const s = 1 + Math.sin(clock.elapsedTime * 1.5) * 0.04;
-      glowRef.current.scale.setScalar(s);
-    }
-  });
-
-  return (
-    <Float speed={2} rotationIntensity={0.2} floatIntensity={0.3}>
-      {/* Main sphere */}
-      <mesh ref={meshRef}>
-        <icosahedronGeometry args={[0.6, 4]} />
-        <meshPhysicalMaterial
-          color="#e8e8e8"
-          metalness={0.15}
-          roughness={0.15}
-          clearcoat={0.9}
-          clearcoatRoughness={0.08}
-          iridescence={0.2}
-          iridescenceIOR={0.85}
-          sheen={1}
-          sheenRoughness={0.3}
-          sheenColor="#ffffff"
-          wireframe={false}
-          transparent
-          opacity={0.9}
-        />
-      </mesh>
-
-      {/* Inner glow sphere */}
-      <mesh ref={glowRef}>
-        <icosahedronGeometry args={[0.55, 3]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.06}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-
-      {/* Wireframe overlay */}
-      <mesh>
-        <icosahedronGeometry args={[0.65, 3]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          wireframe
-          transparent
-          opacity={0.06}
-          depthWrite={false}
-        />
-      </mesh>
-    </Float>
-  );
-}
 
 const socialLinks = [
   {
@@ -187,19 +118,12 @@ export function ConnectSection() {
       </motion.div>
 
       <motion.div style={{ opacity }} className="mx-auto max-w-4xl text-center relative z-10">
-        {/* 3D Sphere */}
-        <div className="relative w-32 h-32 mx-auto mb-12">
-          <div className="absolute inset-0 bg-white/[0.01] rounded-full blur-2xl" />
-          <Canvas
-            camera={{ position: [0, 0, 3], fov: 40 }}
-            dpr={[1, 2]}
-            gl={{ alpha: true, antialias: true }}
-          >
-            <ambientLight intensity={0.6} />
-            <pointLight position={[3, 2, 3]} intensity={2} color="#ffffff" />
-            <pointLight position={[-2, -1, -2]} intensity={0.8} color="#d4d4d8" />
-            <ContactSphere />
-          </Canvas>
+        {/* Decorative rings */}
+        <div className="relative w-32 h-32 mx-auto mb-12 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full border border-white/[0.06] animate-spin-slow" />
+          <div className="absolute inset-3 rounded-full border border-white/[0.04] animate-spin-slow [animation-direction:reverse] [animation-duration:8s]" />
+          <div className="absolute inset-6 rounded-full border border-white/[0.05] animate-spin-slow [animation-duration:6s]" />
+          <div className="w-3 h-3 rounded-full bg-white/15 animate-pulse-glow shadow-[0_0_16px_rgba(255,255,255,0.12)]" />
         </div>
 
         <h2 className="font-heading text-4xl sm:text-5xl font-bold mb-6">
