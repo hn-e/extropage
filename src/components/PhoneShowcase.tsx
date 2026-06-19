@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import Image from "next/image";
 
 /* ──────────── Screenshot Gallery Card ──────────── */
 
@@ -62,9 +63,11 @@ function ScreenshotCard({
           {/* Notch */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-black rounded-b-lg z-10" />
           {/* Screenshot */}
-          <img
+          <Image
             src={src}
             alt={`Extroverts screenshot ${index + 1}`}
+            width={600}
+            height={1200}
             className="w-full h-auto block"
             loading="lazy"
           />

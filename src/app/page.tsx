@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { useScroll, useTransform } from "framer-motion";
+import Image from "next/image";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
 import { AboutSection } from "@/components/AboutSection";
@@ -42,11 +43,14 @@ export default function Home() {
         <ConnectSection />
 
         {/* Full-width image */}
-        <section className="w-full">
-          <img
+        <section className="w-full relative">
+          <Image
             src="/himanshu_soni.png"
             alt="Himanshu Soni"
+            width={1200}
+            height={800}
             className="w-full h-auto block"
+            priority
           />
         </section>
       </main>
