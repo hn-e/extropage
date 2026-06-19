@@ -103,7 +103,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-[#0a0a0a] text-[#fafafa] min-h-screen bg-grid-fine bg-noise">
+      <body className="bg-[#0a0a0a] text-[#fafafa] min-h-screen bg-grid-fine">
         <CustomCursor />
         <Loader />
         {children}
