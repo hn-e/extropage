@@ -96,6 +96,14 @@ export function ConnectSection() {
       id="connect"
       className="relative py-32 px-6 overflow-hidden"
     >
+      {/* Radial vignette — dampens background particles behind text */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          background: "radial-gradient(ellipse 50% 60% at 50% 40%, rgba(10,10,10,0.6) 0%, transparent 65%)",
+        }}
+      />
+
       {/* Background decoration */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none opacity-30">
         <div className="absolute inset-0 rounded-full border border-white/[0.02] animate-spin-slow" />

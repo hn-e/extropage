@@ -39,6 +39,14 @@ export function AboutSection() {
       id="about"
       className="relative py-32 px-6 overflow-hidden"
     >
+      {/* Radial vignette — dampens background particles behind text */}
+      <div
+        className="absolute inset-0 pointer-events-none z-0"
+        style={{
+          background: "radial-gradient(ellipse 50% 60% at 50% 40%, rgba(10,10,10,0.6) 0%, transparent 65%)",
+        }}
+      />
+
       {/* Section Label */}
       <motion.div
         style={{ opacity }}

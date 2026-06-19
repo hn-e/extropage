@@ -138,7 +138,7 @@ export function PhoneShowcase() {
       />
 
       <motion.div
-        style={{ opacity, y, scale, background: "radial-gradient(ellipse 50% 50% at 50% 45%, rgba(10,10,10,0.7) 30%, transparent 100%)", }}
+        style={{ opacity, y, scale, background: "radial-gradient(ellipse 50% 60% at 50% 45%, rgba(10,10,10,0.6) 0%, transparent 65%)", }}
         className="relative z-10 flex flex-col items-center gap-10 text-center max-w-3xl"
       >
         {/* Section label */}
@@ -193,7 +193,7 @@ export function PhoneShowcase() {
 
       {/* ── Store Badges ── */}
       <motion.div
-        style={{ opacity, background: "radial-gradient(ellipse 50% 50% at 50% 75%, rgba(10,10,10,0.4) 30%, transparent 100%)", }}
+        style={{ opacity, background: "radial-gradient(ellipse 50% 60% at 50% 75%, rgba(10,10,10,0.6) 0%, transparent 65%)", }}
         className="relative z-10 flex items-center justify-center gap-4 pt-8"
       >
         <a

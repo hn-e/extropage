@@ -61,14 +61,12 @@ export function HeroSection() {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
     >
 
-      {/* Gradient overlays */}
-      {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/15 to-[#0a0a0a] pointer-events-none z-0" /> */}
+      {/* Radial vignette — dampens background particles behind text */}
       <div
         className="absolute inset-0 pointer-events-none z-0"
-        // style={{
-        //   background:
-        //     "radial-gradient(ellipse at center, transparent 30%, rgba(10,10,10,0.7) 100%)",
-        // }}
+        style={{
+          background: "radial-gradient(ellipse 50% 60% at 50% 40%, rgba(10,10,10,0.6) 0%, transparent 65%)",
+        }}
       />
       {/* Subtle center glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] pointer-events-none z-0 bg-glow-radial animate-breathe" />

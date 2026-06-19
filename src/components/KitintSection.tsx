@@ -251,17 +251,13 @@ export function KitintSection() {
         <div className="absolute inset-0 bg-glow-radial" />
       </div>
 
-      {/* Radial vignette — dark center behind text */}
-      <div
-        className="absolute inset-0 pointer-events-none z-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 50% 40% at 50% 40%, rgba(10,10,10,0.55) 0%, transparent 70%)",
-        }}
-      />
-
       <motion.div
-        style={{ opacity, y, scale }}
+        style={{
+          opacity,
+          y,
+          scale,
+          background: "radial-gradient(ellipse 80% 100% at 50% 50%, rgba(10,10,10,0.6) 0%, transparent 70%)",
+        }}
         className="relative z-10 flex flex-col items-center gap-10 text-center max-w-3xl pb-16 px-6"
       >
         {/* Section label */}
