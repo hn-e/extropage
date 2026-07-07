@@ -5,9 +5,7 @@ import { useRef, useMemo, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
-import { useMotionValue, useSpring, type MotionValue } from "framer-motion";
-
-// ── Shape generators ──────────────────────────────────────────────
+import { useMotionValue, useSpring } from "framer-motion";
 
 const COUNT = 4000;
 
@@ -39,282 +37,16 @@ function generateSphere() {
   return { positions, radials };
 }
 
-function generatePhone() {
-  const positions = new Float32Array(COUNT * 3);
-  const radials = new Float32Array(COUNT * 3);
-  const hw = 0.55;
-  const hh = 1.2;
-  const hd = 0.055;
-
-  const set = (i: number, x: number, y: number, z: number) => {
-    positions[i * 3] = x;
-    positions[i * 3 + 1] = y;
-    positions[i * 3 + 2] = z;
-    const len = Math.sqrt(x * x + y * y + z * z) || 1;
-    radials[i * 3] = x / len;
-    radials[i * 3 + 1] = y / len;
-    radials[i * 3 + 2] = z / len;
-  };
-
-  let idx = 0;
-
-  // Front face (screen) — densest
-  const frontN = Math.floor(COUNT * 0.42);
-  for (let i = 0; i < frontN; i++, idx++) {
-    set(idx, (Math.random() - 0.5) * 2 * hw, (Math.random() - 0.5) * 2 * hh, hd);
-  }
-  // Camera notch cluster
-  const notchN = Math.floor(COUNT * 0.02);
-  for (let i = 0; i < notchN; i++, idx++) {
-    set(idx, (Math.random() - 0.5) * 0.2, hh * 0.84 + (Math.random() - 0.5) * 0.04, hd);
-  }
-
-  // Back face
-  const backN = Math.floor(COUNT * 0.28);
-  for (let i = 0; i < backN; i++, idx++) {
-    set(idx, (Math.random() - 0.5) * 2 * hw, (Math.random() - 0.5) * 2 * hh, -hd);
-  }
-
-  // Top edge
-  const topN = Math.floor(COUNT * 0.07);
-  for (let i = 0; i < topN; i++, idx++) {
-    set(idx, (Math.random() - 0.5) * 2 * hw, hh, (Math.random() - 0.5) * 2 * hd);
-  }
-  // Bottom edge
-  const botN = Math.floor(COUNT * 0.07);
-  for (let i = 0; i < botN; i++, idx++) {
-    set(idx, (Math.random() - 0.5) * 2 * hw, -hh, (Math.random() - 0.5) * 2 * hd);
-  }
-  // Left edge
-  const leftN = Math.floor(COUNT * 0.07);
-  for (let i = 0; i < leftN; i++, idx++) {
-    set(idx, -hw, (Math.random() - 0.5) * 2 * hh, (Math.random() - 0.5) * 2 * hd);
-  }
-  // Right edge (remaining)
-  while (idx < COUNT) {
-    set(idx, hw, (Math.random() - 0.5) * 2 * hh, (Math.random() - 0.5) * 2 * hd);
-    idx++;
-  }
-
-  return { positions, radials };
-}
-
-function generateTerminal() {
-  const positions = new Float32Array(COUNT * 3);
-  const radials = new Float32Array(COUNT * 3);
-
-  const set = (i: number, x: number, y: number, z: number) => {
-    positions[i * 3] = x;
-    positions[i * 3 + 1] = y;
-    positions[i * 3 + 2] = z;
-    const len = Math.sqrt(x * x + y * y + z * z) || 1;
-    radials[i * 3] = x / len;
-    radials[i * 3 + 1] = y / len;
-    radials[i * 3 + 2] = z / len;
-  };
-
-  const hd = 0.09; // half-depth for 3D extrusion
-  const strokeW = 0.18;
-
-  // ── > chevron ──
-  const ax = -1.0, ayT = 1.0, ayB = -1.0;
-  const px = 0.28, py = 0;
-
-  // ── _ underscore ──
-  const usX0 = 0.52, usX1 = 1.45, usY = -0.55;
-
-  // ── Corner points for rounding ──
-  const corners = [
-    { x: ax, y: ayT },        // top-left
-    { x: ax, y: ayB },        // bottom-left
-    { x: px, y: py },         // meeting point
-    { x: usX0, y: usY },      // underscore left
-    { x: usX1, y: usY },      // underscore right
-  ];
-
-  // Pick a random point inside the 2D stroke shape
-  const shapeXY = () => {
-    const r = Math.random();
-    if (r < 0.40) {
-      // > top arm
-      const t = Math.random();
-      const dx = px - ax, dy = py - ayT;
-      const len = Math.sqrt(dx * dx + dy * dy);
-      const nx = -dy / len, ny = dx / len;
-      const off = (Math.random() - 0.5) * strokeW;
-      return { x: ax + dx * t + nx * off, y: ayT + dy * t + ny * off };
-    }
-    if (r < 0.80) {
-      // > bottom arm
-      const t = Math.random();
-      const dx = px - ax, dy = py - ayB;
-      const len = Math.sqrt(dx * dx + dy * dy);
-      const nx = -dy / len, ny = dx / len;
-      const off = (Math.random() - 0.5) * strokeW;
-      return { x: ax + dx * t + nx * off, y: ayB + dy * t + ny * off };
-    }
-    // _ underscore
-    return {
-      x: usX0 + Math.random() * (usX1 - usX0),
-      y: usY + (Math.random() - 0.5) * strokeW * 1.2,
-    };
-  };
-
-  let idx = 0;
-
-  // ── Front face (z = hd) — 30% ──
-  const frontN = Math.floor(COUNT * 0.30);
-  for (let i = 0; i < frontN; i++, idx++) {
-    const { x, y } = shapeXY();
-    set(idx, x, y, hd + (Math.random() - 0.5) * 0.008);
-  }
-
-  // ── Back face (z = -hd) — 20% ──
-  const backN = Math.floor(COUNT * 0.20);
-  for (let i = 0; i < backN; i++, idx++) {
-    const { x, y } = shapeXY();
-    set(idx, x, y, -hd + (Math.random() - 0.5) * 0.008);
-  }
-
-  // ── Volume body (z random -hd..hd) — 30% ──
-  const bodyN = Math.floor(COUNT * 0.30);
-  for (let i = 0; i < bodyN; i++, idx++) {
-    const { x, y } = shapeXY();
-    set(idx, x, y, (Math.random() - 0.5) * 2 * hd);
-  }
-
-  // ── Rounded corner blobs — 12% ──
-  const cornerN = Math.floor(COUNT * 0.12);
-  const cr = strokeW * 0.75; // corner radius
-  for (let i = 0; i < cornerN; i++, idx++) {
-    const c = corners[i % 5];
-    // Uniform distribution inside a sphere
-    const u = Math.random();
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    const r = cr * Math.cbrt(u);
-    set(idx, c.x + r * Math.sin(phi) * Math.cos(theta), c.y + r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
-  }
-
-  // ── Edge loop — fill remaining with boundary-edge emphasis ──
-  while (idx < COUNT) {
-    // Favour the stroke outline for edge definition
-    const r = Math.random();
-    let x: number, y: number;
-    if (r < 0.45) {
-      // > top arm, forced to edge
-      const t = Math.random();
-      const dx = px - ax, dy = py - ayT;
-      const len = Math.sqrt(dx * dx + dy * dy);
-      const nx = -dy / len, ny = dx / len;
-      const side = Math.random() < 0.5 ? 1 : -1;
-      x = ax + dx * t + nx * strokeW * 0.5 * side;
-      y = ayT + dy * t + ny * strokeW * 0.5 * side;
-    } else if (r < 0.90) {
-      // > bottom arm, forced to edge
-      const t = Math.random();
-      const dx = px - ax, dy = py - ayB;
-      const len = Math.sqrt(dx * dx + dy * dy);
-      const nx = -dy / len, ny = dx / len;
-      const side = Math.random() < 0.5 ? 1 : -1;
-      x = ax + dx * t + nx * strokeW * 0.5 * side;
-      y = ayB + dy * t + ny * strokeW * 0.5 * side;
-    } else {
-      // _ underscore edges
-      x = usX0 + Math.random() * (usX1 - usX0);
-      y = usY + (Math.random() < 0.5 ? 1 : -1) * strokeW * 0.6;
-    }
-    // Wide z spread for extrusion sides
-    set(idx, x, y, (Math.random() - 0.5) * 2 * hd * 1.15);
-    idx++;
-  }
-
-  return { positions, radials };
-}
-
-function generateCube() {
-  const positions = new Float32Array(COUNT * 3);
-  const radials = new Float32Array(COUNT * 3);
-  const h = 1.3; // half-size
-
-  const set = (i: number, x: number, y: number, z: number) => {
-    positions[i * 3] = x;
-    positions[i * 3 + 1] = y;
-    positions[i * 3 + 2] = z;
-    const len = Math.sqrt(x * x + y * y + z * z) || 1;
-    radials[i * 3] = x / len;
-    radials[i * 3 + 1] = y / len;
-    radials[i * 3 + 2] = z / len;
-  };
-
-  let idx = 0;
-  const faceN = Math.floor(COUNT / 6);
-
-  // +Z face
-  for (let i = 0; i < faceN; i++, idx++)
-    set(idx, (Math.random() - 0.5) * 2 * h, (Math.random() - 0.5) * 2 * h, h);
-
-  // -Z face
-  for (let i = 0; i < faceN; i++, idx++)
-    set(idx, (Math.random() - 0.5) * 2 * h, (Math.random() - 0.5) * 2 * h, -h);
-
-  // +Y face
-  for (let i = 0; i < faceN; i++, idx++)
-    set(idx, (Math.random() - 0.5) * 2 * h, h, (Math.random() - 0.5) * 2 * h);
-
-  // -Y face
-  for (let i = 0; i < faceN; i++, idx++)
-    set(idx, (Math.random() - 0.5) * 2 * h, -h, (Math.random() - 0.5) * 2 * h);
-
-  // +X face
-  for (let i = 0; i < faceN; i++, idx++)
-    set(idx, h, (Math.random() - 0.5) * 2 * h, (Math.random() - 0.5) * 2 * h);
-
-  // -X face (remaining)
-  while (idx < COUNT)
-    set(idx, -h, (Math.random() - 0.5) * 2 * h, (Math.random() - 0.5) * 2 * h), idx++;
-
-  return { positions, radials };
-}
-
-function Particles({
-  phoneProgress,
-  terminalProgress,
-  cubeProgress,
-}: {
-  phoneProgress: MotionValue<number>;
-  terminalProgress: MotionValue<number>;
-  cubeProgress: MotionValue<number>;
-}) {
+function Particles() {
   const pointsRef = useRef<THREE.Points>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const lastCursor = useRef({ x: 0, y: 0, z: 0 });
-  const lastPhone = useRef(-1);
-  const lastTerminal = useRef(-1);
-  const lastCube = useRef(-1);
 
   const springX = useSpring(mouseX, { stiffness: 90, damping: 16 });
   const springY = useSpring(mouseY, { stiffness: 90, damping: 16 });
 
   const sphere = useMemo(() => generateSphere(), []);
-  const phone = useMemo(() => generatePhone(), []);
-  const terminal = useMemo(() => generateTerminal(), []);
-  const cube = useMemo(() => generateCube(), []);
-
-  const delays = useMemo(() => {
-    const d = new Float32Array(COUNT);
-    const sp = sphere.positions;
-    let maxR = 0;
-    for (let i = 0; i < COUNT; i++) {
-      const i3 = i * 3;
-      const r = Math.sqrt(sp[i3] * sp[i3] + sp[i3 + 1] * sp[i3 + 1] + sp[i3 + 2] * sp[i3 + 2]);
-      d[i] = r;
-      if (r > maxR) maxR = r;
-    }
-    for (let i = 0; i < COUNT; i++) d[i] = 1 - d[i] / maxR;
-    return d;
-  }, [sphere.positions]);
 
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
@@ -334,9 +66,6 @@ function Particles({
   }, [mouseX, mouseY]);
 
   useFrame(({ clock }) => {
-    const phoneT = phoneProgress.get();
-    const terminalT = terminalProgress.get();
-    const cubeT = cubeProgress.get();
     const mx = springX.get();
     const my = springY.get();
 
@@ -351,26 +80,13 @@ function Particles({
       Math.abs(cx - lastCursor.current.x) > 0.003 ||
       Math.abs(cy - lastCursor.current.y) > 0.003 ||
       Math.abs(cz - lastCursor.current.z) > 0.003;
-    const morphChanged =
-      Math.abs(phoneT - lastPhone.current) > 0.0005 ||
-      Math.abs(terminalT - lastTerminal.current) > 0.0005 ||
-      Math.abs(cubeT - lastCube.current) > 0.0005;
 
-    if (cursorMoved || morphChanged) {
+    if (cursorMoved) {
       lastCursor.current = { x: cx, y: cy, z: cz };
-      lastPhone.current = phoneT;
-      lastTerminal.current = terminalT;
-      lastCube.current = cubeT;
 
       const pos = pointsRef.current!.geometry.attributes.position;
       const sp = sphere.positions;
       const sr = sphere.radials;
-      const pp = phone.positions;
-      const pr = phone.radials;
-      const tp = terminal.positions;
-      const tr = terminal.radials;
-      const cp = cube.positions;
-      const cr = cube.radials;
 
       const sigma = 0.65;
       const maxDisp = 0.38;
@@ -379,46 +95,14 @@ function Particles({
 
       for (let i = 0; i < COUNT; i++) {
         const i3 = i * 3;
-        const delay = delays[i];
-
-        // ── Stage 1: sphere → phone ──
-        const pt1 = Math.max(0, Math.min(1, (phoneT - (1 - delay) * 0.25) / 0.75));
-        const eased1 = pt1 < 0.5 ? 2 * pt1 * pt1 : 1 - Math.pow(-2 * pt1 + 2, 2) / 2;
-
-        const s1x = sp[i3] + (pp[i3] - sp[i3]) * eased1;
-        const s1y = sp[i3 + 1] + (pp[i3 + 1] - sp[i3 + 1]) * eased1;
-        const s1z = sp[i3 + 2] + (pp[i3 + 2] - sp[i3 + 2]) * eased1;
-
-        const s1rx = sr[i3] + (pr[i3] - sr[i3]) * eased1;
-        const s1ry = sr[i3 + 1] + (pr[i3 + 1] - sr[i3 + 1]) * eased1;
-        const s1rz = sr[i3 + 2] + (pr[i3 + 2] - sr[i3 + 2]) * eased1;
-
-        // ── Stage 2: stage1 → terminal ──
-        const pt2 = Math.max(0, Math.min(1, (terminalT - (1 - delay) * 0.25) / 0.75));
-        const eased2 = pt2 < 0.5 ? 2 * pt2 * pt2 : 1 - Math.pow(-2 * pt2 + 2, 2) / 2;
-
-        const s2x = s1x + (tp[i3] - s1x) * eased2;
-        const s2y = s1y + (tp[i3 + 1] - s1y) * eased2;
-        const s2z = s1z + (tp[i3 + 2] - s1z) * eased2;
-
-        const s2rx = s1rx + (tr[i3] - s1rx) * eased2;
-        const s2ry = s1ry + (tr[i3 + 1] - s1ry) * eased2;
-        const s2rz = s1rz + (tr[i3 + 2] - s1rz) * eased2;
-
-        // ── Stage 3: stage2 → cube ──
-        const pt3 = Math.max(0, Math.min(1, (cubeT - (1 - delay) * 0.25) / 0.75));
-        const eased3 = pt3 < 0.5 ? 2 * pt3 * pt3 : 1 - Math.pow(-2 * pt3 + 2, 2) / 2;
-
-        const bx = s2x + (cp[i3] - s2x) * eased3;
-        const by = s2y + (cp[i3 + 1] - s2y) * eased3;
-        const bz = s2z + (cp[i3 + 2] - s2z) * eased3;
-
-        const rx = s2rx + (cr[i3] - s2rx) * eased3;
-        const ry = s2ry + (cr[i3 + 1] - s2ry) * eased3;
-        const rz = s2rz + (cr[i3 + 2] - s2rz) * eased3;
+        const bx = sp[i3];
+        const by = sp[i3 + 1];
+        const bz = sp[i3 + 2];
+        const rx = sr[i3];
+        const ry = sr[i3 + 1];
+        const rz = sr[i3 + 2];
         const rlen = Math.sqrt(rx * rx + ry * ry + rz * rz) || 1;
 
-        // ── Liquid displacement ──
         const dx = bx - cx;
         const dy = by - cy;
         const dz = bz - cz;
@@ -435,7 +119,6 @@ function Particles({
       pos.needsUpdate = true;
     }
 
-    // Auto-revolution — always runs
     if (pointsRef.current) {
       pointsRef.current.rotation.x = my * 0.08 + Math.sin(clock.elapsedTime * 0.18) * 0.06;
       pointsRef.current.rotation.y = mx * 0.08 + clock.elapsedTime * 0.15;
@@ -446,65 +129,17 @@ function Particles({
   return (
     <points ref={pointsRef} geometry={geometry}>
       <pointsMaterial
-        size={0.008}
-        color="#f0f0f0"
+        size={0.02}
+        color="#D97706"
         transparent
-        opacity={0.7}
+        opacity={0.75}
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={THREE.NormalBlending}
         sizeAttenuation
       />
     </points>
   );
 }
-
-// ── Orbiting Ring ─────────────────────────────────────────────────
-
-function OrbitingRing() {
-  const ringRef = useRef<THREE.Mesh>(null);
-  const ringRef2 = useRef<THREE.Mesh>(null);
-
-  const ringGeo = useMemo(() => new THREE.TorusGeometry(2.3, 0.008, 16, 200), []);
-  const ringGeo2 = useMemo(() => new THREE.TorusGeometry(2.5, 0.006, 16, 180), []);
-
-  useFrame(({ clock }) => {
-    if (ringRef.current) {
-      ringRef.current.rotation.x = Math.sin(clock.elapsedTime * 0.3) * 0.6;
-      ringRef.current.rotation.y = clock.elapsedTime * 0.25;
-      ringRef.current.rotation.z = Math.cos(clock.elapsedTime * 0.2) * 0.4;
-    }
-    if (ringRef2.current) {
-      ringRef2.current.rotation.x = Math.cos(clock.elapsedTime * 0.25) * 0.5;
-      ringRef2.current.rotation.y = -clock.elapsedTime * 0.2;
-      ringRef2.current.rotation.z = Math.sin(clock.elapsedTime * 0.3) * 0.35;
-    }
-  });
-
-  return (
-    <group>
-      <mesh ref={ringRef} geometry={ringGeo}>
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.08}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-      <mesh ref={ringRef2} geometry={ringGeo2}>
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.05}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-// ── Cursor Spotlight ──────────────────────────────────────────────
 
 function CursorSpotlight() {
   const lightRef = useRef<THREE.PointLight>(null);
@@ -529,57 +164,27 @@ function CursorSpotlight() {
     }
   });
 
-  return <pointLight ref={lightRef} intensity={1.5} color="#ffffff" distance={6} decay={2} />;
+  return <pointLight ref={lightRef} intensity={2.5} color="#FBBF24" distance={6} decay={2} />;
 }
 
-// ── Scene ─────────────────────────────────────────────────────────
-
-function Scene({
-  phoneProgress,
-  terminalProgress,
-  cubeProgress,
-}: {
-  phoneProgress: MotionValue<number>;
-  terminalProgress: MotionValue<number>;
-  cubeProgress: MotionValue<number>;
-}) {
+function Scene() {
   return (
     <>
-      <ambientLight intensity={0.35} />
-      <pointLight position={[4, 3, 4]} intensity={2.5} color="#ffffff" />
-      <pointLight position={[-4, -2, -3]} intensity={1.2} color="#d4d4d8" />
-      <pointLight position={[0, -3, 2]} intensity={0.6} color="#a1a1aa" />
-      <pointLight position={[-2, 3, -2]} intensity={0.8} color="#f5f5f5" />
+      <ambientLight intensity={0.8} />
+      <pointLight position={[4, 3, 4]} intensity={2.5} color="#FBBF24" />
+      <pointLight position={[-4, -2, -3]} intensity={1.2} color="#D97706" />
+      <pointLight position={[0, -3, 2]} intensity={0.6} color="#F59E0B" />
+      <pointLight position={[-2, 3, -2]} intensity={0.8} color="#FDE68A" />
       <CursorSpotlight />
-      {/* Subtle center core */}
-      <mesh>
-        <sphereGeometry args={[0.6, 32, 32]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.06} depthWrite={false} />
-      </mesh>
-      <mesh>
-        <sphereGeometry args={[1.2, 32, 32]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.025} depthWrite={false} side={THREE.BackSide} />
-      </mesh>
-      <OrbitingRing />
-      <Particles phoneProgress={phoneProgress} terminalProgress={terminalProgress} cubeProgress={cubeProgress} />
-      <Environment preset="studio" environmentIntensity={0.3} />
+      <Particles />
+      <Environment preset="studio" environmentIntensity={0.5} />
     </>
   );
 }
 
-// ── Export — persistent full-page background ──────────────────────
-
-export function BackgroundCanvas({
-  phoneProgress,
-  terminalProgress,
-  cubeProgress,
-}: {
-  phoneProgress: MotionValue<number>;
-  terminalProgress: MotionValue<number>;
-  cubeProgress: MotionValue<number>;
-}) {
+export function BackgroundCanvas() {
   return (
-    <div className="fixed inset-0 -z-10 pointer-events-none">
+    <div className="fixed inset-0 -z-10 pointer-events-none" style={{ background: "#FFFBF0" }}>
       <Canvas
         camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
         dpr={[1, 2]}
@@ -592,7 +197,7 @@ export function BackgroundCanvas({
         }}
       >
         <Suspense fallback={null}>
-          <Scene phoneProgress={phoneProgress} terminalProgress={terminalProgress} cubeProgress={cubeProgress} />
+          <Scene />
         </Suspense>
       </Canvas>
     </div>
