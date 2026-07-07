@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import Image from "next/image";
 
 /* ──────────── Screenshot Gallery Card ──────────── */
@@ -105,6 +105,13 @@ const storeLinks = {
 export function PhoneShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
+  const gallerySentinelRef = useRef<HTMLDivElement>(null);
+  const galleryInView = useInView(gallerySentinelRef, { margin: "-0px 0px -300px 0px" });
+  const [galleryMounted, setGalleryMounted] = useState(false);
+
+  useEffect(() => {
+    if (galleryInView) setGalleryMounted(true);
+  }, [galleryInView]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -128,7 +135,7 @@ export function PhoneShowcase() {
     <section
       ref={containerRef}
       id="phone-showcase"
-      className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden content-auto"
     >
       {/* Ambient glow behind phone */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[900px] pointer-events-none opacity-15">
@@ -238,11 +245,15 @@ export function PhoneShowcase() {
         </a>
       </motion.div>
 
-      {/* ── Screenshot Gallery ── */}
-      <motion.div
-        style={{ opacity }}
-        className="relative z-10 mt-24 mx-auto max-w-7xl w-full"
-      >
+      {/* Sentinel — triggers gallery mount when near viewport */}
+      <div ref={gallerySentinelRef} className="h-0 w-full" />
+
+      {galleryMounted && (
+        /* ── Screenshot Gallery ── */
+        <motion.div
+          style={{ opacity }}
+          className="relative z-10 mt-24 mx-auto max-w-7xl w-full"
+        >
         <div className="flex items-end justify-between mb-10">
           <div>
             <h3 className="font-heading text-2xl font-bold text-white/50">
@@ -300,7 +311,8 @@ export function PhoneShowcase() {
             </div>
           ))}
         </div>
-      </motion.div>
+        </motion.div>
+      )}
     </section>
   );
 }

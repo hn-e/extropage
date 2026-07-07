@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useMemo, useState, useEffect } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import {
   SiReact,
   SiNextdotjs,
@@ -172,6 +172,13 @@ function Terminal() {
 
 export function KitintSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const sentinelInView = useInView(sentinelRef, { margin: "-0px 0px -300px 0px" });
+  const [gridMounted, setGridMounted] = useState(false);
+
+  useEffect(() => {
+    if (sentinelInView) setGridMounted(true);
+  }, [sentinelInView]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -244,7 +251,7 @@ export function KitintSection() {
     <section
       ref={containerRef}
       id="kitint"
-      className="relative min-h-screen flex flex-col items-center pt-24 overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center pt-24 overflow-hidden content-auto"
     >
       {/* Ambient glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[900px] pointer-events-none opacity-12">
@@ -310,8 +317,13 @@ export function KitintSection() {
         </motion.div>
       </motion.div>
 
-      {/* Grid — square cells, random glassmorph chips, glowing connections */}
-      <div ref={gridRef} className="relative w-full bg-black grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-12">
+      {/* Sentinel — triggers grid mount when near viewport */}
+      <div ref={sentinelRef} className="h-0 w-full" />
+
+      {gridMounted && (
+        <>
+          {/* Grid — square cells, random glassmorph chips, glowing connections */}
+          <div ref={gridRef} className="relative w-full bg-black grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-12">
         {/* SVG orthogonal mind-map lines */}
         {gridW > 0 && (
           <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
@@ -396,6 +408,8 @@ export function KitintSection() {
 
       {/* ── Terminal ────────────────────────────────────────────────── */}
       <Terminal />
+        </>
+      )}
 
     </section>
   );

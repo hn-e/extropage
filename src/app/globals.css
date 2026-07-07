@@ -77,6 +77,14 @@ body {
   .backface-hidden {
     backface-visibility: hidden;
   }
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 100vh;
+  }
+  .content-auto-sm {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
 }
 
 /* ====== GLASS MORPHISM ====== */

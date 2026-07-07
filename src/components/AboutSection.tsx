@@ -37,7 +37,7 @@ export function AboutSection() {
     <section
       ref={containerRef}
       id="about"
-      className="relative py-32 px-6 overflow-hidden"
+      className="relative py-32 px-6 overflow-hidden content-auto"
     >
       {/* Radial vignette — dampens background particles behind text */}
       <div

@@ -58,7 +58,7 @@ export function HeroSection() {
     <section
       ref={containerRef}
       id="hero"
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden content-auto"
     >
 
       {/* Radial vignette — dampens background particles behind text */}

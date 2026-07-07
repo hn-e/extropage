@@ -94,7 +94,7 @@ export function ConnectSection() {
     <section
       ref={containerRef}
       id="connect"
-      className="relative py-32 px-6 overflow-hidden"
+      className="relative py-32 px-6 overflow-hidden content-auto"
     >
       {/* Radial vignette — dampens background particles behind text */}
       <div
