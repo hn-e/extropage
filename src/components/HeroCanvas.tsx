@@ -90,17 +90,40 @@ function Particles() {
     const theta = mx * Math.PI;
     const phi = my * Math.PI * 0.45;
     const R = 1.8;
-    const cx = R * Math.cos(phi) * Math.sin(theta);
-    const cy = R * Math.sin(phi);
-    const cz = R * Math.cos(phi) * Math.cos(theta);
+    let cx = R * Math.cos(phi) * Math.sin(theta);
+    let cy = R * Math.sin(phi);
+    let cz = R * Math.cos(phi) * Math.cos(theta);
 
     const cursorMoved =
       Math.abs(cx - lastCursor.current.x) > 0.003 ||
       Math.abs(cy - lastCursor.current.y) > 0.003 ||
       Math.abs(cz - lastCursor.current.z) > 0.003;
 
+    // Compute rotation exactly as it will be applied to the mesh
+    const rx = my * 0.08 + Math.sin(clock.elapsedTime * 0.12) * 0.06;
+    const ry = mx * 0.08 + clock.elapsedTime * 0.10;
+    const rz = Math.cos(clock.elapsedTime * 0.09) * 0.06;
+
     if (cursorMoved) {
       lastCursor.current = { x: cx, y: cy, z: cz };
+
+      // Inverse-rotate cursor from world space into mesh local space
+      // Euler XYZ order: R = Rz(rz)·Ry(ry)·Rx(rx), so inverse = Rx(-rx)·Ry(-ry)·Rz(-rz)
+      // Step 1: rotate around Z by -rz
+      const cosRz = Math.cos(-rz), sinRz = Math.sin(-rz);
+      let lx = cx * cosRz - cy * sinRz;
+      let ly = cx * sinRz + cy * cosRz;
+      let lz = cz;
+      // Step 2: rotate around Y by -ry
+      const cosRy = Math.cos(-ry), sinRy = Math.sin(-ry);
+      const tx = lx * cosRy + lz * sinRy;
+      lz = lz * cosRy - lx * sinRy;
+      lx = tx;
+      // Step 3: rotate around X by -rx
+      const cosRx = Math.cos(-rx), sinRx = Math.sin(-rx);
+      const lyPrev = ly;
+      ly = lyPrev * cosRx - lz * sinRx;
+      lz = lyPrev * sinRx + lz * cosRx;
 
       const pos = pointsRef.current!.geometry.attributes.position;
       const sp = sphere.positions;
@@ -116,19 +139,19 @@ function Particles() {
         const bx = sp[i3];
         const by = sp[i3 + 1];
         const bz = sp[i3 + 2];
-        const rx = sr[i3];
-        const ry = sr[i3 + 1];
-        const rz = sr[i3 + 2];
-        const rlen = Math.sqrt(rx * rx + ry * ry + rz * rz) || 1;
+        const rdx = sr[i3];
+        const rdy = sr[i3 + 1];
+        const rdz = sr[i3 + 2];
+        const rlen = Math.sqrt(rdx * rdx + rdy * rdy + rdz * rdz) || 1;
 
-        const dx = bx - cx;
-        const dy = by - cy;
-        const dz = bz - cz;
+        const dx = bx - lx;
+        const dy = by - ly;
+        const dz = bz - lz;
         const dSq = dx * dx + dy * dy + dz * dz;
 
         if (dSq < cutoffSq) {
           const influence = Math.exp(-dSq / twoSigmaSq) * maxDisp;
-          pos.setXYZ(i, bx + (rx / rlen) * influence, by + (ry / rlen) * influence, bz + (rz / rlen) * influence);
+          pos.setXYZ(i, bx + (rdx / rlen) * influence, by + (rdy / rlen) * influence, bz + (rdz / rlen) * influence);
         } else {
           pos.setXYZ(i, bx, by, bz);
         }
@@ -138,9 +161,9 @@ function Particles() {
     }
 
     if (pointsRef.current) {
-      pointsRef.current.rotation.x = my * 0.08 + Math.sin(clock.elapsedTime * 0.12) * 0.06;
-      pointsRef.current.rotation.y = mx * 0.08 + clock.elapsedTime * 0.10;
-      pointsRef.current.rotation.z = Math.cos(clock.elapsedTime * 0.09) * 0.06;
+      pointsRef.current.rotation.x = rx;
+      pointsRef.current.rotation.y = ry;
+      pointsRef.current.rotation.z = rz;
     }
   });
 
