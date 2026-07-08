@@ -9,6 +9,7 @@ import { ConnectSection } from "@/components/ConnectSection";
 import { PhoneShowcase } from "@/components/PhoneShowcase";
 import { KitintSection } from "@/components/KitintSection";
 import { BackgroundCanvas } from "@/components/HeroCanvas";
+import { HorizontalScroll } from "@/components/HorizontalScroll";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,6 +20,8 @@ export default function Home() {
       <main ref={containerRef} className="relative">
         <Navbar />
         <HeroSection />
+        <div className="h-screen" />
+        <HorizontalScroll />
         <PhoneShowcase />
         <KitintSection />
         <AboutSection />
