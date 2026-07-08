@@ -138,9 +138,9 @@ function Particles() {
     }
 
     if (pointsRef.current) {
-      pointsRef.current.rotation.x = my * 0.08 + Math.sin(clock.elapsedTime * 0.18) * 0.06;
-      pointsRef.current.rotation.y = mx * 0.08 + clock.elapsedTime * 0.15;
-      pointsRef.current.rotation.z = Math.cos(clock.elapsedTime * 0.14) * 0.06;
+      pointsRef.current.rotation.x = my * 0.08 + Math.sin(clock.elapsedTime * 0.12) * 0.06;
+      pointsRef.current.rotation.y = mx * 0.08 + clock.elapsedTime * 0.10;
+      pointsRef.current.rotation.z = Math.cos(clock.elapsedTime * 0.09) * 0.06;
     }
   });
 
@@ -149,11 +149,11 @@ function Particles() {
       <pointsMaterial
         size={0.02}
         map={circleTexture}
-        color="#D97706"
+        color="#f0f0f0"
         transparent
-        opacity={0.75}
+        opacity={0.7}
         depthWrite={false}
-        blending={THREE.NormalBlending}
+        blending={THREE.AdditiveBlending}
         sizeAttenuation
       />
     </points>
@@ -183,7 +183,7 @@ function CursorSpotlight() {
     }
   });
 
-  return <pointLight ref={lightRef} intensity={2.5} color="#FBBF24" distance={6} decay={2} />;
+  return <pointLight ref={lightRef} intensity={1.5} color="#ffffff" distance={6} decay={2} />;
 }
 
 function CameraZoom() {
@@ -211,22 +211,22 @@ function CameraZoom() {
 function Scene() {
   return (
     <>
-      <ambientLight intensity={0.8} />
-      <pointLight position={[4, 3, 4]} intensity={2.5} color="#FBBF24" />
-      <pointLight position={[-4, -2, -3]} intensity={1.2} color="#D97706" />
-      <pointLight position={[0, -3, 2]} intensity={0.6} color="#F59E0B" />
-      <pointLight position={[-2, 3, -2]} intensity={0.8} color="#FDE68A" />
+      <ambientLight intensity={0.35} />
+      <pointLight position={[4, 3, 4]} intensity={2.5} color="#ffffff" />
+      <pointLight position={[-4, -2, -3]} intensity={1.2} color="#d4d4d8" />
+      <pointLight position={[0, -3, 2]} intensity={0.6} color="#a1a1aa" />
+      <pointLight position={[-2, 3, -2]} intensity={0.8} color="#f5f5f5" />
       <CameraZoom />
       <CursorSpotlight />
       <Particles />
-      <Environment preset="studio" environmentIntensity={0.5} />
+      <Environment preset="studio" environmentIntensity={0.3} />
     </>
   );
 }
 
 export function BackgroundCanvas() {
   return (
-    <div className="fixed inset-0 -z-10 pointer-events-none" style={{ background: "#FFFBF0" }}>
+    <div className="fixed inset-0 -z-10 pointer-events-none">
       <Canvas
         camera={{ position: [0, 0, 6], fov: 45, near: 0.1, far: 100 }}
         dpr={[1, 2]}

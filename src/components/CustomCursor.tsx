@@ -106,7 +106,6 @@ export function CustomCursor() {
             borderRadius: "50%",
             background: "rgba(255,255,255,0.15)",
             boxShadow: "0 0 6px rgba(255,255,255,0.1)",
-            mixBlendMode: "difference",
           }}
         />
       ))}
@@ -120,7 +119,6 @@ export function CustomCursor() {
           translateX: "-50%",
           translateY: "-50%",
           opacity: isVisible ? 1 : 0,
-          mixBlendMode: "difference",
         }}
       >
         <motion.div
@@ -146,7 +144,6 @@ export function CustomCursor() {
             background: "rgba(255,255,255,0.02)",
             backdropFilter: "blur(2px)",
             WebkitBackdropFilter: "blur(2px)",
-            mixBlendMode: "difference",
           }}
         />
       </motion.div>
@@ -160,7 +157,6 @@ export function CustomCursor() {
           translateX: "-50%",
           translateY: "-50%",
           opacity: isVisible ? 1 : 0,
-          mixBlendMode: "difference",
         }}
       >
         <div
@@ -171,7 +167,6 @@ export function CustomCursor() {
             background: "rgba(255,255,255,0.9)",
             boxShadow:
               "0 0 8px rgba(255,255,255,0.5), 0 0 20px rgba(255,255,255,0.2), 0 0 40px rgba(255,255,255,0.1)",
-            mixBlendMode: "difference",
           }}
         />
       </motion.div>
