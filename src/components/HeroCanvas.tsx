@@ -2,7 +2,7 @@
 
 import "@/app/three-patch";
 import { useRef, useMemo, useEffect, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 import { useMotionValue, useSpring } from "framer-motion";
@@ -55,6 +55,24 @@ function Particles() {
     geo.setAttribute("position", new THREE.BufferAttribute(arr, 3));
     return geo;
   }, [sphere.positions]);
+
+  const circleTexture = useMemo(() => {
+    const size = 32;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    const gradient = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+    gradient.addColorStop(0, "rgba(255,255,255,1)");
+    gradient.addColorStop(0.3, "rgba(255,255,255,1)");
+    gradient.addColorStop(0.7, "rgba(255,255,255,0.3)");
+    gradient.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, size, size);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.needsUpdate = true;
+    return tex;
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -130,6 +148,7 @@ function Particles() {
     <points ref={pointsRef} geometry={geometry}>
       <pointsMaterial
         size={0.02}
+        map={circleTexture}
         color="#D97706"
         transparent
         opacity={0.75}
@@ -167,6 +186,28 @@ function CursorSpotlight() {
   return <pointLight ref={lightRef} intensity={2.5} color="#FBBF24" distance={6} decay={2} />;
 }
 
+function CameraZoom() {
+  const { camera } = useThree();
+  const scrollZ = useMotionValue(6);
+  const springZ = useSpring(scrollZ, { stiffness: 60, damping: 20 });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const vh = window.innerHeight;
+      const t = Math.min(window.scrollY / (vh * 0.8), 1);
+      scrollZ.set(6 - t * 5.5);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [scrollZ]);
+
+  useFrame(() => {
+    camera.position.z = springZ.get();
+  });
+
+  return null;
+}
+
 function Scene() {
   return (
     <>
@@ -175,6 +216,7 @@ function Scene() {
       <pointLight position={[-4, -2, -3]} intensity={1.2} color="#D97706" />
       <pointLight position={[0, -3, 2]} intensity={0.6} color="#F59E0B" />
       <pointLight position={[-2, 3, -2]} intensity={0.8} color="#FDE68A" />
+      <CameraZoom />
       <CursorSpotlight />
       <Particles />
       <Environment preset="studio" environmentIntensity={0.5} />
