@@ -10,6 +10,7 @@ import { PhoneShowcase } from "@/components/PhoneShowcase";
 import { KitintSection } from "@/components/KitintSection";
 import { BackgroundCanvas } from "@/components/HeroCanvas";
 import { HorizontalScroll } from "@/components/HorizontalScroll";
+import { MarqueeSection } from "@/components/MarqueeSection";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,6 +23,7 @@ export default function Home() {
         <HeroSection />
         <div className="h-screen" />
         <HorizontalScroll />
+        <MarqueeSection />
         <PhoneShowcase />
         <KitintSection />
         <AboutSection />
