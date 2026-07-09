@@ -3,15 +3,6 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-/* ──────────── App Info ──────────── */
-
-const features = [
-  "Meet new people around you",
-  "Hangout at party places",
-  "See spotlights in your city",
-  "All for free",
-];
-
 const storeLinks = {
   appStore:
     "https://apps.apple.com/us/app/extroverts-party-hangout-vibe/id6746046462",
@@ -21,189 +12,107 @@ const storeLinks = {
 
 export function ExtrovertsSection() {
   const containerRef = useRef<HTMLDivElement>(null);
-
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
 
-  const sectionOpacity = useTransform(scrollYProgress, [0, 0.15, 0.3], [0, 1, 1]);
-  const contentX = useTransform(scrollYProgress, [0.1, 0.4], [80, 0]);
-  const contentOpacity = useTransform(scrollYProgress, [0.1, 0.35], [0, 1]);
+  const fadeIn = useTransform(scrollYProgress, [0.1, 0.35], [0, 1]);
 
   return (
     <section
       ref={containerRef}
-      id="extroverts"
-      className="relative py-32 px-6 overflow-hidden"
+      className="relative h-screen flex flex-col items-center justify-center overflow-hidden"
     >
-      {/* Background ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] pointer-events-none opacity-20">
-        <div className="absolute inset-0 bg-glow-radial" />
-      </div>
+      {/* Breathing animated gradient bg */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(135deg, #0a0a1a, #140a2e, #0d0d2b, #15091f, #0a0a1a)",
+          backgroundSize: "400% 400%",
+          animation: "hero-breathe 22s ease-in-out infinite",
+        }}
+      />
 
-      {/* Section Label */}
-      <motion.div
-        style={{ opacity: sectionOpacity }}
-        className="mb-16 flex items-center gap-3"
-      >
-        <span className="font-mono text-xs tracking-[0.3em] text-white/20 uppercase">
-          Featured
-        </span>
-        <span className="h-px w-12 bg-gradient-to-r from-white/15 to-transparent" />
-        <span className="font-mono text-xs tracking-[0.2em] text-white/30 uppercase">
-          Product
-        </span>
-      </motion.div>
+      <div className="absolute inset-0 bg-black/20" />
 
-      {/* ── Main Two-Column Layout ── */}
-      <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center min-h-[600px]">
-        {/* Left: Phone display area — 3D phone rendered by global background canvas */}
-        <motion.div
-          style={{ opacity: sectionOpacity }}
-          className="relative h-[550px] sm:h-[650px] lg:h-[700px] order-2 lg:order-1"
+      <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
+        {/* Line 1: white text, gradient question mark */}
+        <motion.h1
+          style={{ opacity: fadeIn }}
+          className="select-none text-4xl font-black uppercase leading-[0.9] text-white sm:text-5xl md:text-7xl lg:text-[5.5rem]"
         >
-          {/* The phone shape is rendered by the persistent BackgroundCanvas particles.
-              This column serves as layout spacing so the text flows alongside it. */}
+          No plans for
+          <br />
+          the night
+          <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
+            ?
+          </span>
+        </motion.h1>
 
-          {/* Subtle glow under where the phone appears */}
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[300px] h-4 bg-white/[0.02] blur-3xl rounded-full pointer-events-none" />
-        </motion.div>
-
-        {/* Right: Content */}
-        <motion.div
-          style={{ x: contentX, opacity: contentOpacity }}
-          className="space-y-10 order-1 lg:order-2"
+        {/* Line 2: full gradient text */}
+        <motion.h1
+          style={{ opacity: fadeIn }}
+          className="mt-3 select-none bg-gradient-to-r from-violet-400 via-pink-400 to-amber-400 bg-clip-text text-4xl font-black uppercase leading-[0.9] text-transparent sm:text-5xl md:text-7xl lg:text-[5.5rem]"
         >
-          {/* App Name + Icon */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-white/[0.02] border border-white/[0.08] flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.05)]">
-                <span className="font-heading text-xl font-bold text-white/60">
-                  E
-                </span>
-              </div>
-              <div>
-                <div className="flex items-center gap-3">
-                  <h2 className="font-heading text-4xl sm:text-5xl font-bold">
-                    <span className="text-gradient-metallic">Extroverts</span>
-                  </h2>
-                  <span className="flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.02] px-2.5 py-0.5">
-                    <span className="relative flex h-1.5 w-1.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/60 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white/70" />
-                    </span>
-                    <span className="text-[9px] tracking-[0.15em] text-white/40 uppercase font-mono">
-                      Live
-                    </span>
-                  </span>
-                </div>
-                <p className="text-sm text-white/30 mt-1">
-                  Party · Hangout · Vibe
-                </p>
-              </div>
-            </div>
-          </div>
+          You got me
+          <span className="text-amber-400">.</span>
+        </motion.h1>
 
-          {/* Description */}
-          <p className="text-base text-white/35 leading-relaxed max-w-md">
-            A cross-platform mobile app built from scratch — iOS and Android.
-            Meet people, discover party spots, and explore what&apos;s
-            happening in your city.
-          </p>
+        {/* CTA button */}
+        <motion.a
+          href="https://extroverts.app"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ opacity: fadeIn }}
+          className="group relative z-20 mt-14 inline-flex cursor-pointer items-center gap-2 rounded-full bg-gradient-to-r from-violet-500 to-pink-500 px-8 py-3.5 text-sm uppercase tracking-[0.2em] text-white shadow-lg shadow-violet-500/25 transition-all duration-500 hover:scale-[1.03] hover:shadow-xl hover:shadow-violet-500/40"
+        >
+          visit extroverts.app
+          <span className="text-lg transition-transform duration-300 group-hover:translate-y-0.5">
+            &rarr;
+          </span>
+        </motion.a>
 
-          {/* Features */}
-          <div className="space-y-3">
-            {features.map((feature, i) => (
-              <motion.div
-                key={feature}
-                className="flex items-center gap-3 glass-border glass-panel-pro rounded-xl px-5 py-3.5 hoverable hover:bg-white/[0.04] transition-all duration-300"
-                initial={{ opacity: 0, x: 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-white/30 flex-shrink-0" />
-                <span className="text-sm text-white/45">{feature}</span>
-              </motion.div>
-            ))}
-          </div>
+        {/* Store badges */}
+        <motion.div
+          style={{ opacity: fadeIn }}
+          className="flex items-center gap-4 mt-8"
+        >
+          <a
+            href={storeLinks.appStore}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm px-4 py-2.5 flex items-center gap-2.5 hover:bg-white/[0.08] hover:border-white/20 transition-all duration-500"
+          >
+            <svg className="w-4 h-4 text-white/50" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+            </svg>
+            <span className="text-[11px] font-medium text-white/60">App Store</span>
+          </a>
 
-          {/* Stats Row */}
-          <div className="flex items-center gap-6 flex-wrap">
-            <div className="glass-border glass-panel-pro rounded-2xl px-6 py-4 hoverable hover:bg-white/[0.04] transition-all duration-300">
-              <div className="flex items-center gap-1.5 mb-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <svg
-                    key={i}
-                    className="w-3.5 h-3.5 text-white/50"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                  </svg>
-                ))}
-              </div>
-              <span className="font-mono text-xl font-semibold text-white/70">
-                5.0
-              </span>
-              <span className="text-[10px] tracking-[0.1em] text-white/25 ml-1">
-                · 100+ ratings
-              </span>
-            </div>
-
-            <div className="glass-border glass-panel-pro rounded-2xl px-6 py-4 hoverable hover:bg-white/[0.04] transition-all duration-300">
-              <span className="font-mono text-xl font-semibold text-white/70">
-                8K+
-              </span>
-              <span className="text-[10px] tracking-[0.1em] text-white/25 ml-1">
-                downloads
-              </span>
-            </div>
-          </div>
-
-          {/* Store Badges */}
-          <div className="flex items-center gap-4 pt-4">
-            <a
-              href={storeLinks.appStore}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass-border-neon glass-panel-pro rounded-xl px-5 py-3 flex items-center gap-3 hoverable hover:bg-white/[0.06] transition-all duration-500 group hover:glow-neon"
-            >
-              <svg className="w-5 h-5 text-white/50 group-hover:text-white/80 transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-              </svg>
-              <div className="text-left">
-                <span className="block text-[9px] tracking-[0.1em] text-white/30 uppercase leading-tight">
-                  Download on the
-                </span>
-                <span className="block text-sm font-semibold text-white/60 group-hover:text-white/80 transition-colors leading-tight">
-                  App Store
-                </span>
-              </div>
-            </a>
-
-            <a
-              href={storeLinks.playStore}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass-border-neon glass-panel-pro rounded-xl px-5 py-3 flex items-center gap-3 hoverable hover:bg-white/[0.06] transition-all duration-500 group hover:glow-neon"
-            >
-              <svg className="w-5 h-5 text-white/50 group-hover:text-white/80 transition-colors" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.993l-2.302 2.302L5.864 2.658z" />
-              </svg>
-              <div className="text-left">
-                <span className="block text-[9px] tracking-[0.1em] text-white/30 uppercase leading-tight">
-                  Get it on
-                </span>
-                <span className="block text-sm font-semibold text-white/60 group-hover:text-white/80 transition-colors leading-tight">
-                  Google Play
-                </span>
-              </div>
-            </a>
-          </div>
+          <a
+            href={storeLinks.playStore}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm px-4 py-2.5 flex items-center gap-2.5 hover:bg-white/[0.08] hover:border-white/20 transition-all duration-500"
+          >
+            <svg className="w-4 h-4 text-white/50" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.807 1.626a1 1 0 010 1.732l-2.807 1.626L15.206 12l2.492-2.492zM5.864 2.658L16.8 8.993l-2.302 2.302L5.864 2.658z" />
+            </svg>
+            <span className="text-[11px] font-medium text-white/60">Google Play</span>
+          </a>
         </motion.div>
       </div>
+
+      <style jsx>{`
+        @keyframes hero-breathe {
+          0%, 100% { background-position: 0% 50%; }
+          25% { background-position: 100% 0%; }
+          50% { background-position: 100% 100%; }
+          75% { background-position: 0% 100%; }
+        }
+      `}</style>
     </section>
   );
 }

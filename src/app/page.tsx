@@ -6,11 +6,11 @@ import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
 import { AboutSection } from "@/components/AboutSection";
 import { ConnectSection } from "@/components/ConnectSection";
-import { PhoneShowcase } from "@/components/PhoneShowcase";
 import { KitintSection } from "@/components/KitintSection";
 import { BackgroundCanvas } from "@/components/HeroCanvas";
 import { HorizontalScroll } from "@/components/HorizontalScroll";
 import { MarqueeSection } from "@/components/MarqueeSection";
+import { ExtrovertsSection } from "@/components/ExtrovertsSection";
 
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -24,7 +24,7 @@ export default function Home() {
         <div className="h-screen" />
         <HorizontalScroll />
         <MarqueeSection />
-        <PhoneShowcase />
+        <ExtrovertsSection />
         <KitintSection />
         <AboutSection />
         <ConnectSection />
