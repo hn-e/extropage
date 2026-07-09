@@ -103,6 +103,20 @@ export function ExtrovertsSection() {
             <span className="text-[11px] font-medium text-white/60">Google Play</span>
           </a>
         </motion.div>
+
+        {/* Spotlight CTA */}
+        <motion.a
+          href="mailto:himanshu@extroverts.app"
+          style={{ opacity: fadeIn }}
+          className="mt-6 rounded-xl border border-white/[0.08] bg-white/[0.02] backdrop-blur-sm px-5 py-3 text-sm text-white/40 hover:text-white/70 hover:bg-white/[0.05] hover:border-white/[0.15] transition-all duration-300"
+        >
+          <span className="text-white/60">Own a party hotspot?</span>{" "}
+          Get it into <span className="text-violet-400/60">SPOTLIGHT</span>{" "}
+          &mdash;{" "}
+          <span className="text-white/40 underline underline-offset-2">
+            himanshu@extroverts.app
+          </span>
+        </motion.a>
       </div>
 
       <style jsx>{`
