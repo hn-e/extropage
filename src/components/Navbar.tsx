@@ -4,11 +4,8 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const navLinks = [
-  { label: "About", href: "#about" },
-  { label: "Experience", href: "#experience" },
   { label: "Extroverts", href: "#extroverts" },
-  { label: "Kitint", href: "#kitint" },
-  { label: "Projects", href: "#projects" },
+  { label: "Kitinit", href: "#kitint" },
   { label: "Connect", href: "#connect" },
 ];
 
@@ -51,10 +48,10 @@ export function Navbar() {
       transition={{ delay: 1.8, duration: 0.8, ease: "easeOut" }}
     >
       <nav
-        className={`mx-auto max-w-5xl rounded-2xl transition-all duration-700 ${
+        className={`mx-auto max-w-5xl rounded-2xl transition-all duration-700 backdrop-blur-xl ${
           scrolled
             ? "glass-panel-pro glow-pro px-6 py-3"
-            : "bg-transparent px-6 py-3"
+            : "px-6 py-3"
         }`}
       >
         <div className="flex items-center justify-between">

@@ -22,6 +22,7 @@ export function ExtrovertsSection() {
   return (
     <section
       ref={containerRef}
+      id="extroverts"
       className="relative h-screen flex flex-col items-center justify-center overflow-hidden"
     >
       {/* Breathing animated gradient bg */}
