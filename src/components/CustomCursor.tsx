@@ -12,6 +12,7 @@ interface TrailDot {
 export function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [hoverSize, setHoverSize] = useState(56);
   const [isTouch, setIsTouch] = useState(false);
   const [trails, setTrails] = useState<TrailDot[]>([]);
   const cursorX = useMotionValue(-100);
@@ -58,8 +59,16 @@ export function CustomCursor() {
     document.addEventListener("mouseenter", handleMouseEnter);
     document.addEventListener("mouseleave", handleMouseLeave);
 
-    const handleHoverStart = () => setIsHovering(true);
-    const handleHoverEnd = () => setIsHovering(false);
+    const handleHoverStart = (e: Event) => {
+      const target = e.currentTarget as HTMLElement;
+      const size = target.getAttribute("data-cursor-size");
+      setHoverSize(size ? parseInt(size, 10) : 56);
+      setIsHovering(true);
+    };
+    const handleHoverEnd = () => {
+      setIsHovering(false);
+      setHoverSize(56);
+    };
 
     const hoverables = document.querySelectorAll(
       'a, button, [data-cursor-hover], input, textarea, [role="button"], .hoverable'
@@ -123,8 +132,8 @@ export function CustomCursor() {
       >
         <motion.div
           animate={{
-            width: isHovering ? 56 : 36,
-            height: isHovering ? 56 : 36,
+            width: isHovering ? hoverSize : 36,
+            height: isHovering ? hoverSize : 36,
             borderColor: isHovering
               ? "rgba(255,255,255,0.3)"
               : "rgba(255,255,255,0.12)",

@@ -6,7 +6,11 @@ const words = ["Performance", "UI", "Modern", "Code", "Speed", "Books"];
 
 export function MarqueeSection() {
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a] border-t border-white/[0.04]">
+    <section
+      data-cursor-hover
+      data-cursor-size="150"
+      className="relative h-screen flex items-center justify-center overflow-hidden bg-[#0a0a0a] border-t border-white/[0.04]"
+    >
       <div className="w-full">
         {[...Array(2)].map((_, row) => (
           <motion.div
