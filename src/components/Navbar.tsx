@@ -48,9 +48,9 @@ export function Navbar() {
       transition={{ delay: 1.8, duration: 0.8, ease: "easeOut" }}
     >
       <nav
-        className={`mx-auto max-w-5xl rounded-2xl transition-all duration-700 backdrop-blur-xl ${
+        className={`mx-auto max-w-5xl rounded-2xl transition-all duration-700 backdrop-blur-xl border border-transparent ${
           scrolled
-            ? "glass-panel-pro glow-pro px-6 py-3"
+            ? "glass-panel-pro glow-pro !border-white/[0.08] px-6 py-3"
             : "px-6 py-3"
         }`}
       >
